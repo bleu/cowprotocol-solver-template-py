@@ -35,18 +35,18 @@ source venv/bin/activate
 python -m src._server
 ```
 
-The solver will start on `http://localhost:8000`
+The solver will start on `http://localhost:8080`
 
 ## Test the Solver
 
 ### Health Check
 ```shell
-curl http://localhost:8000/health
+curl http://localhost:8080/health
 ```
 
 ### Solve an Auction
 ```shell
-curl -X POST "http://127.0.0.1:8000/solve" \
+curl -X POST "http://127.0.0.1:8080/solve" \
   -H "accept: application/json" \
   -H "Content-Type: application/json" \
   --data "@data/small_example.json"
@@ -63,7 +63,7 @@ git clone https://github.com/cowprotocol/services.git
 cd services
 ```
 
-2. Make sure your solver is running on `http://127.0.0.1:8000`
+2. Make sure your solver is running on `http://127.0.0.1:8080`
 
 ### Run the Driver
 ```shell
@@ -71,7 +71,7 @@ cargo run -p driver -- \
     --orderbook-url https://barn.api.cow.fi/xdai/api \
     --base-tokens 0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83 \
     --node-url "https://rpc.gnosischain.com" \
-    --cow-dex-ag-solver-url "http://127.0.0.1:8000" \
+    --cow-dex-ag-solver-url "http://127.0.0.1:8080" \
     --solver-account 0x7942a2b3540d1ec40b2740896f87aecb2a588731 \
     --solvers CowDexAg \
     --transaction-strategy DryRun \
@@ -92,15 +92,15 @@ Navigate to [barn.cow.fi/](https://barn.cow.fi/) and place a tiny (real) order. 
 src/
 ├── _server.py              # Main server entry point
 ├── models/                 # Data models
-│   ├── batch_auction.py   # Auction data structures
-│   ├── order.py           # Order data structures
-│   ├── solver_args.py     # Solver configuration
-│   └── ...
-├── util/                   # Utility functions
-│   ├── constants.py       # Protocol constants
-│   ├── enums.py          # Enumerations
-│   └── ...
-└── ...
+│   ├── cow_auction.py     # CoW Protocol auction models
+│   ├── cow_solution.py    # CoW Protocol solution models
+│   ├── base/              # Reference utilities
+│   │   ├── token.py       # Base token model
+│   │   └── types.py       # Type definitions
+│   └── legacy/            # Legacy models (reference only)
+│       └── batch_auction.py
+└── examples/              # Example implementations
+    └── basic_solver.py    # Basic solver example
 
 data/
 ├── small_example.json     # Example auction data
@@ -109,11 +109,19 @@ data/
 
 ## Implementation Guide
 
-1. **Understand the Models**: Start by examining the data models in `src/models/`
-2. **Implement Solver Logic**: Modify the solve endpoint in `src/_server.py`
-3. **Add Pathfinding**: Implement algorithms to find optimal trading paths
-4. **Handle AMMs**: Add support for different AMM protocols
-5. **Optimize**: Implement price optimization and MEV protection
+1. **Understand the Models**: Start by examining the new CoW Protocol models in `src/models/cow_auction.py` and `src/models/cow_solution.py`
+2. **Study Examples**: Check `src/examples/basic_solver.py` for implementation patterns
+3. **Implement Solver Logic**: Modify the solve endpoint in `src/_server.py`
+4. **Add Pathfinding**: Implement algorithms to find optimal trading paths
+5. **Handle AMMs**: Add support for different AMM protocols
+6. **Optimize**: Implement price optimization and MEV protection
+
+## Schema Compatibility
+
+This template now uses the current CoW Protocol schema:
+- **Input**: `CowAuction` model with proper field aliases
+- **Output**: `Solutions` model matching the protocol specification
+- **Field Names**: Uses Python snake_case with automatic camelCase JSON conversion
 
 ## References
 
