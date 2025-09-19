@@ -1,9 +1,16 @@
-black==22.3.0
-fastapi==0.95.2
-uvicorn==0.22.0
-pylint==2.13.5
-python-dotenv==0.20.0
-pydantic==1.10.12
-pytest==7.1.1
-makefun==1.13.1
-mypy==0.942
+# Core dependencies
+fastapi>=0.95.0
+uvicorn>=0.22.0
+pydantic>=1.10.0,<2.0.0
+python-dotenv>=0.20.0
+typer>=0.9.0
+prometheus-client>=0.16.0
+
+# Development tools
+pytest>=7.1.0
+black>=22.0.0
+pylint>=2.13.0
+mypy>=0.940
+
+# Optional utilities
+makefun>=1.13.0
