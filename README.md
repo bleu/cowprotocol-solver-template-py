@@ -30,6 +30,29 @@ pip install -r requirements.txt
 
 ## Run Solver Server
 
+### Multi-Engine Solver (Recommended)
+
+The solver now supports multiple engines in a single FastAPI application:
+
+```shell
+source venv/bin/activate
+python -m python_baseline.infra.cli run --host 0.0.0.0 --port 8080
+```
+
+Or using uvicorn directly:
+```shell
+uvicorn python_baseline.api.app:app --host 0.0.0.0 --port 8080
+```
+
+The solver will start on `http://localhost:8080` with the following endpoints:
+- `GET /healthz` - Health check
+- `GET /metrics` - Prometheus metrics
+- `POST /baseline/solve` - Baseline solver engine
+- `POST /mysolver/solve` - MySolver engine (stub implementation)
+- `POST /solve` - Default solver (configurable via DEFAULT_SOLVER_ROUTE)
+
+### Legacy Server (Deprecated)
+
 ```shell
 source venv/bin/activate
 python -m src._server
@@ -41,15 +64,36 @@ The solver will start on `http://localhost:8080`
 
 ### Health Check
 ```shell
-curl http://localhost:8080/health
+curl http://localhost:8080/healthz
 ```
 
-### Solve an Auction
+### Solve an Auction with Baseline Engine
+```shell
+curl -X POST "http://127.0.0.1:8080/baseline/solve" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  --data "@data/small_example.json"
+```
+
+### Solve an Auction with MySolver Engine
+```shell
+curl -X POST "http://127.0.0.1:8080/mysolver/solve" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  --data "@data/small_example.json"
+```
+
+### Solve an Auction with Default Engine
 ```shell
 curl -X POST "http://127.0.0.1:8080/solve" \
   -H "accept: application/json" \
   -H "Content-Type: application/json" \
   --data "@data/small_example.json"
+```
+
+### Prometheus Metrics
+```shell
+curl http://localhost:8080/metrics
 ```
 
 ## Connect to the Orderbook
@@ -63,7 +107,7 @@ git clone https://github.com/cowprotocol/services.git
 cd services
 ```
 
-2. Make sure your solver is running on `http://127.0.0.1:8080`
+2. Make sure your solver is running on `http://127.0.0.1:11088`
 
 ### Run the Driver
 ```shell
@@ -71,7 +115,7 @@ cargo run -p driver -- \
     --orderbook-url https://barn.api.cow.fi/xdai/api \
     --base-tokens 0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83 \
     --node-url "https://rpc.gnosischain.com" \
-    --cow-dex-ag-solver-url "http://127.0.0.1:8080" \
+    --cow-dex-ag-solver-url "http://127.0.0.1:11088" \
     --solver-account 0x7942a2b3540d1ec40b2740896f87aecb2a588731 \
     --solvers CowDexAg \
     --transaction-strategy DryRun \
@@ -79,6 +123,21 @@ cargo run -p driver -- \
 ```
 
 The driver will connect to the staging orderbook on Gnosis Chain (very low traffic) so you can work with your own orders.
+
+### Autopilot Configuration
+
+You can configure autopilot to use different solver engines by pointing to different endpoints:
+
+```shell
+# Use baseline solver
+--cow-dex-ag-solver-url "http://127.0.0.1:11088/baseline/solve"
+
+# Use MySolver engine
+--cow-dex-ag-solver-url "http://127.0.0.1:11088/mysolver/solve"
+
+# Use default solver (configurable via DEFAULT_SOLVER_ROUTE)
+--cow-dex-ag-solver-url "http://127.0.0.1:11088/solve"
+```
 
 ## Place an Order
 
