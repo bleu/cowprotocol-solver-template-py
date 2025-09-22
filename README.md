@@ -26,6 +26,22 @@ source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
+
+# Install additional dependencies for configuration system
+pip install pydantic-settings httpx
+
+# Verify installation
+python -c "from src.infra.settings import settings; print('✅ Config OK:', settings.solver.chain_id)"
+```
+
+### Quick Test
+
+```sh
+# Test configuration system
+python -m pytest src/tests/test_config.py -v
+
+# Show current configuration
+python -m src.infra.cli config
 ```
 
 ## Run Solver Server
@@ -97,6 +113,19 @@ curl http://localhost:8080/metrics
 
 The project includes a comprehensive test suite:
 
+### Configuration Tests (Recommended)
+```shell
+# Test configuration system (9 tests)
+python -m pytest src/tests/test_config.py -v
+
+# Quick configuration test
+python -c "from src.infra.settings import settings; print('✅ Config OK:', settings.solver.chain_id)"
+
+# Show current configuration
+python -m src.infra.cli config
+```
+
+### All Tests
 ```shell
 # Run all tests
 pytest src/tests/
@@ -108,6 +137,17 @@ pytest src/tests/test_multi_engine.py
 
 # Run with coverage
 pytest src/tests/ --cov=src
+```
+
+### Test Commands Summary
+```shell
+# Basic tests
+python -m pytest src/tests/test_config.py -v          # Configuration tests
+python -m pytest src/tests/test_api_health_metrics.py -v  # API tests
+
+# Manual tests
+python -c "from src.infra.settings import settings; print(settings.solver.dict())"  # Show config
+python -m src.infra.cli config                          # CLI config display
 ```
 
 ## Connect to the Orderbook

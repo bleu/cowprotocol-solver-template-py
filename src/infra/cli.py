@@ -30,7 +30,7 @@ def run(
     """
     Run the baseline solver server.
     """
-    # Override settings with CLI arguments
+    # Override with CLI args if provided
     if host:
         settings.host = host
     if port:
@@ -87,10 +87,19 @@ def config():
     typer.echo(f"  Host: {settings.host}")
     typer.echo(f"  Port: {settings.port}")
     typer.echo(f"  Log Level: {settings.log_level}")
-    typer.echo(f"  Metrics Enabled: {settings.metrics_enabled}")
-    typer.echo(f"  Max Orders: {settings.max_orders_per_auction}")
-    typer.echo(f"  Max Tokens: {settings.max_tokens_per_auction}")
-    typer.echo(f"  Max Liquidity: {settings.max_liquidity_sources}")
+    typer.echo(f"  Default Solver Route: {settings.default_solver_route}")
+    typer.echo("")
+    typer.echo("Solver Configuration:")
+    typer.echo(f"  Chain ID: {settings.solver.chain_id}")
+    typer.echo(f"  WETH Address: {settings.solver.weth_address}")
+    typer.echo(f"  Max Hops: {settings.solver.max_hops}")
+    typer.echo(f"  Max Partial Attempts: {settings.solver.max_partial_attempts}")
+    typer.echo(f"  Solution Gas Offset: {settings.solver.solution_gas_offset}")
+    typer.echo(f"  Base Tokens: {len(settings.solver.base_tokens)} tokens")
+    if settings.solver.uni_v3_quoter_address:
+        typer.echo(f"  Uniswap V3 Quoter: {settings.solver.uni_v3_quoter_address}")
+    else:
+        typer.echo("  Uniswap V3 Quoter: Not configured")
 
 
 @app.command()
@@ -98,7 +107,7 @@ def version():
     """
     Display solver version.
     """
-    typer.echo(f"CoW Protocol Baseline Solver v{settings.solver_version}")
+    typer.echo("CoW Protocol Baseline Solver v1.0.0")
 
 
 if __name__ == "__main__":

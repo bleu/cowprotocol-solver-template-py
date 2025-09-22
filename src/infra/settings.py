@@ -4,79 +4,135 @@ Configuration settings for the baseline solver.
 This module provides configuration management using pydantic.
 """
 
-from typing import Optional, List
+from typing import List, Optional
 from pydantic import BaseModel, Field
-import os
+from pydantic_settings import BaseSettings
 
 
-class SolverSettings(BaseModel):
-    """Solver configuration settings."""
-    
-    # Server settings
-    host: str = Field(default="0.0.0.0", description="Server host")
-    port: int = Field(default=8080, description="Server port")
-    
-    # Solver settings
-    solver_name: str = Field(default="baseline", description="Solver name")
-    solver_version: str = Field(default="1.0.0", description="Solver version")
-    default_solver_route: str = Field(default="baseline", description="Default solver route (baseline|mysolver)")
-    
-    # Logging settings
-    log_level: str = Field(default="INFO", description="Log level")
-    log_format: str = Field(default="%(asctime)s - %(name)s - %(levelname)s - %(message)s", description="Log format")
-    
-    # Metrics settings
-    metrics_enabled: bool = Field(default=True, description="Enable metrics collection")
-    metrics_port: int = Field(default=9090, description="Metrics server port")
-    
-    # Database settings (if needed)
-    database_url: Optional[str] = Field(default=None, description="Database URL")
-    
-    # External service settings
-    ethereum_rpc_url: Optional[str] = Field(default=None, description="Ethereum RPC URL")
-    ethereum_chain_id: int = Field(default=1, description="Ethereum chain ID")
-    
-    # Solver-specific settings
-    max_orders_per_auction: int = Field(default=1000, description="Maximum orders per auction")
-    max_tokens_per_auction: int = Field(default=100, description="Maximum tokens per auction")
-    max_liquidity_sources: int = Field(default=50, description="Maximum liquidity sources")
-    
-    # Performance settings
-    request_timeout: int = Field(default=30, description="Request timeout in seconds")
-    max_concurrent_requests: int = Field(default=100, description="Maximum concurrent requests")
-    
-    # Security settings
-    allowed_origins: List[str] = Field(default=["*"], description="Allowed CORS origins")
-    api_key: Optional[str] = Field(default=None, description="API key for authentication")
-
-
-def get_settings() -> SolverSettings:
+class SolverConfig(BaseSettings):
     """
-    Get settings with environment variable support.
-    
-    Returns:
-        Settings instance
+    Baseline solver configuration.
     """
-    # Read from environment variables
-    return SolverSettings(
-        host=os.getenv("HOST", "0.0.0.0"),
-        port=int(os.getenv("PORT", "8080")),
-        solver_name=os.getenv("SOLVER_NAME", "baseline"),
-        solver_version=os.getenv("SOLVER_VERSION", "1.0.0"),
-        default_solver_route=os.getenv("DEFAULT_SOLVER_ROUTE", "baseline"),
-        log_level=os.getenv("LOG_LEVEL", "INFO"),
-        metrics_enabled=os.getenv("METRICS_ENABLED", "true").lower() == "true",
-        database_url=os.getenv("DATABASE_URL"),
-        ethereum_rpc_url=os.getenv("ETHEREUM_RPC_URL"),
-        ethereum_chain_id=int(os.getenv("ETHEREUM_CHAIN_ID", "1")),
-        max_orders_per_auction=int(os.getenv("MAX_ORDERS_PER_AUCTION", "1000")),
-        max_tokens_per_auction=int(os.getenv("MAX_TOKENS_PER_AUCTION", "100")),
-        max_liquidity_sources=int(os.getenv("MAX_LIQUIDITY_SOURCES", "50")),
-        request_timeout=int(os.getenv("REQUEST_TIMEOUT", "30")),
-        max_concurrent_requests=int(os.getenv("MAX_CONCURRENT_REQUESTS", "100")),
-        api_key=os.getenv("API_KEY")
+    
+    # Network configuration
+    chain_id: int = Field(
+        default=1,  # Mainnet
+        description="Chain ID (1=mainnet, 100=gnosis)"
     )
+    
+    # WETH address (changes per network)
+    weth_address: str = Field(
+        default="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",  # Mainnet WETH
+        description="Wrapped ETH address for the network"
+    )
+    
+    # Base tokens for pathfinding (liquid tokens for intermediary routes)
+    base_tokens: List[str] = Field(
+        default=[
+            "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",  # WETH
+            "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",  # USDC
+            "0xdAC17F958D2ee523a2206206994597C13D831ec7",  # USDT
+            "0x6B175474E89094C44Da98b954EedeAC495271d0F",  # DAI
+            "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",  # WBTC
+        ],
+        description="Tokens to consider as intermediary hops in pathfinding"
+    )
+    
+    # Pathfinding configuration
+    max_hops: int = Field(
+        default=2,
+        ge=0,
+        le=3,
+        description="Maximum hops in a trading path (0=direct, 1=one intermediary, 2=two intermediaries)"
+    )
+    
+    # Partial fill configuration  
+    max_partial_attempts: int = Field(
+        default=5,
+        ge=1,
+        le=10,
+        description="Maximum attempts to solve a partially fillable order by halving amounts"
+    )
+    
+    # Gas configuration
+    solution_gas_offset: int = Field(
+        default=50000,
+        description="Gas units added to route estimate for settlement overhead"
+    )
+    
+    # Price estimation
+    native_token_price_estimation_amount: str = Field(
+        default="1000000000000000000",  # 1 ETH in wei
+        description="Amount of native token to use for price estimation"
+    )
+    
+    # Optional Uniswap V3 support
+    uni_v3_quoter_address: Optional[str] = Field(
+        default=None,
+        description="Uniswap V3 Quoter V2 contract address (optional)"
+    )
+    
+    # Gnosis Chain specific addresses (when chain_id=100)
+    gnosis_weth_address: str = Field(
+        default="0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",  # WXDAI on Gnosis
+        description="WETH address on Gnosis Chain"
+    )
+    
+    gnosis_base_tokens: List[str] = Field(
+        default=[
+            "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",  # WXDAI
+            "0x4ECaBa5870353805a9F068101A40E0f32ed605C6",  # USDT
+            "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83",  # USDC
+            "0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1",  # WETH on Gnosis
+        ],
+        description="Base tokens for Gnosis Chain"
+    )
+    
+    class Config:
+        env_prefix = "SOLVER_"
+        env_file = ".env"
+    
+    def get_network_config(self):
+        """Get configuration based on chain_id."""
+        if self.chain_id == 100:  # Gnosis Chain
+            return {
+                "weth": self.gnosis_weth_address,
+                "base_tokens": self.gnosis_base_tokens
+            }
+        else:  # Mainnet or others
+            return {
+                "weth": self.weth_address,
+                "base_tokens": self.base_tokens
+            }
+
+
+class Settings(BaseSettings):
+    """Main application settings."""
+    
+    # API Configuration
+    host: str = Field(default="0.0.0.0", env="HOST")
+    port: int = Field(default=8080, env="PORT")
+    
+    # Solver Configuration
+    default_solver_route: str = Field(
+        default="baseline",
+        pattern="^(baseline|mysolver)$",
+        description="Default solver engine to use for /solve endpoint"
+    )
+    
+    # Logging
+    log_level: str = Field(
+        default="INFO",
+        pattern="^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$"
+    )
+    
+    # Include solver configuration
+    solver: SolverConfig = Field(default_factory=SolverConfig)
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = False
 
 
 # Global settings instance
-settings = get_settings()
+settings = Settings()
