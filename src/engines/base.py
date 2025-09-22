@@ -3,8 +3,8 @@ Base protocol for solver engines.
 """
 
 from typing import Protocol
-from python_baseline.models.auction import Auction
-from python_baseline.models.solution import Solutions
+from src.domain.auction import Auction
+from src.domain.solution import Solutions
 
 
 class SolverEngine(Protocol):

@@ -4,9 +4,9 @@ Tests for multi-engine solver endpoints.
 
 import pytest
 from fastapi.testclient import TestClient
-from python_baseline.api.app import app
-from python_baseline.models.auction import Auction, Order, Token
-from python_baseline.models.common import Address, U256
+from src.api.app import app
+from src.models.auction import Auction, Order, Token
+from src.models.common import Address, U256
 
 
 @pytest.fixture

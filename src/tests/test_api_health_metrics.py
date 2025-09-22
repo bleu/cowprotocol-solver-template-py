@@ -6,7 +6,7 @@ This module contains tests for the health check and metrics endpoints.
 
 import pytest
 from fastapi.testclient import TestClient
-from python_baseline.api.app import app
+from src.api.app import app
 
 
 client = TestClient(app)

@@ -47,7 +47,7 @@ def run(
     try:
         # Run the server
         uvicorn.run(
-            "python_baseline.api.app:app",
+            "src.api.app:app",
             host=settings.host,
             port=settings.port,
             workers=workers,

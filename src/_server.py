@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from pydantic import BaseSettings
 
 # Import the main app
-from python_baseline.api.app import app
+from src.api.app import app
 
 # Set decimal precision.
 decimal.getcontext().prec = 100
@@ -37,7 +37,7 @@ class ServerSettings(BaseSettings):
 server_settings = ServerSettings()
 
 # ++++ Endpoints: ++++
-# Note: The app is now imported from python_baseline.api.app
+# Note: The app is now imported from src.api.app
 # All endpoints are handled by the main solver application
 
 

@@ -1,22 +1,16 @@
 """
-Baseline solver implementation for CoW Protocol auctions.
-
-This module contains the core solver logic ported from Rust.
+Baseline solver engine implementation.
 """
 
-from typing import Dict, List, Any
-from decimal import Decimal
 import logging
-
-from ..models.auction import Auction
-from ..models.solution import Solution, Solutions
-
-logger = logging.getLogger(__name__)
+from src.domain.auction import Auction
+from src.domain.solution import Solution, Solutions
+from src.engines.base import SolverEngine
 
 
-class BaselineSolver:
+class BaselineEngine:
     """
-    Baseline solver implementation.
+    Baseline solver engine implementation.
     
     This is a direct port of the Rust baseline solver logic.
     For MVP, returns empty solutions (no trades).
@@ -24,7 +18,7 @@ class BaselineSolver:
     
     def __init__(self):
         """Initialize the baseline solver."""
-        self.logger = logging.getLogger(f"{__name__}.BaselineSolver")
+        self.logger = logging.getLogger(f"{__name__}.BaselineEngine")
     
     async def solve(self, auction: Auction) -> Solutions:
         """
@@ -36,10 +30,10 @@ class BaselineSolver:
         Returns:
             Solutions object containing the solver's solutions
         """
-        self.logger.info(f"Solving auction {auction.id}")
+        self.logger.info(f"Solving auction {auction.id} with baseline engine")
         self.logger.info(f"Orders: {len(auction.orders)}, Tokens: {len(auction.tokens)}")
         
-        # TODO: Implement actual solver logic
+        # TODO: Implement actual baseline solver logic
         # For MVP, return empty solution
         solution = Solution(
             id=auction.id,
@@ -73,20 +67,3 @@ class BaselineSolver:
             return False
         
         return True
-
-
-# Global solver instance
-_solver = BaselineSolver()
-
-
-async def solve_auction(auction: Auction) -> Solutions:
-    """
-    Solve an auction using the baseline solver.
-    
-    Args:
-        auction: The auction to solve
-        
-    Returns:
-        Solutions object
-    """
-    return await _solver.solve(auction)

@@ -1,24 +1,24 @@
 """
-Baseline solver engine implementation.
+MySolver engine implementation.
 """
 
 import logging
-from python_baseline.models.auction import Auction
-from python_baseline.models.solution import Solution, Solutions
-from python_baseline.engines.base import SolverEngine
+from src.domain.auction import Auction
+from src.domain.solution import Solution, Solutions
+from src.engines.base import SolverEngine
 
 
-class BaselineEngine:
+class MySolverEngine:
     """
-    Baseline solver engine implementation.
+    MySolver engine implementation.
     
-    This is a direct port of the Rust baseline solver logic.
-    For MVP, returns empty solutions (no trades).
+    This is a stub implementation for user-defined solver logic.
+    Returns minimal valid solutions.
     """
     
     def __init__(self):
-        """Initialize the baseline solver."""
-        self.logger = logging.getLogger(f"{__name__}.BaselineEngine")
+        """Initialize the MySolver engine."""
+        self.logger = logging.getLogger(f"{__name__}.MySolverEngine")
     
     async def solve(self, auction: Auction) -> Solutions:
         """
@@ -30,11 +30,10 @@ class BaselineEngine:
         Returns:
             Solutions object containing the solver's solutions
         """
-        self.logger.info(f"Solving auction {auction.id} with baseline engine")
+        self.logger.info(f"Solving auction {auction.id} with MySolver engine")
         self.logger.info(f"Orders: {len(auction.orders)}, Tokens: {len(auction.tokens)}")
         
-        # TODO: Implement actual baseline solver logic
-        # For MVP, return empty solution
+        # Stub implementation - return minimal valid solution
         solution = Solution(
             id=auction.id,
             trades=[],

@@ -6,10 +6,10 @@ This module contains basic tests to ensure models can be instantiated and valida
 
 import pytest
 from decimal import Decimal
-from python_baseline.models.auction import Auction, Token, Order, Liquidity
-from python_baseline.models.order import Order as OrderModel
-from python_baseline.models.solution import Solution, Solutions, Trade
-from python_baseline.models.liquidity import Liquidity as LiquidityModel
+from src.models.auction import Auction, Token, Order, Liquidity
+from src.models.order import Order as OrderModel
+from src.models.solution import Solution, Solutions, Trade
+from src.models.liquidity import Liquidity as LiquidityModel
 
 
 class TestAuctionModel:

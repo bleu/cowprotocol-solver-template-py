@@ -8,18 +8,16 @@ from fastapi.middleware.gzip import GZipMiddleware
 import time
 import logging
 
-from .solve import solve_auction
 from .healthz import health_check
 from .metrics import (
     record_request, record_solution, record_auction_orders,
     set_active_requests, get_metrics, get_metrics_content_type
 )
-from .baseline_router import router as baseline_router
-from .mysolver_router import router as mysolver_router
-from ..models.auction import Auction
-from ..models.solution import Solutions
-from ..infra.settings import settings
-from ..infra.di import baseline_engine, mysolver_engine
+from .routers import baseline, mysolver
+from src.domain.auction import Auction
+from src.domain.solution import Solutions
+from src.infra.settings import settings
+from src.infra.di import baseline_engine, mysolver_engine
 
 logger = logging.getLogger(__name__)
 
@@ -83,8 +81,8 @@ async def metrics_middleware(request: Request, call_next):
 
 
 # Include routers
-app.include_router(baseline_router)
-app.include_router(mysolver_router)
+app.include_router(baseline.router)
+app.include_router(mysolver.router)
 
 
 @app.get("/healthz")

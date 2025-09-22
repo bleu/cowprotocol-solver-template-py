@@ -32,33 +32,30 @@ pip install -r requirements.txt
 
 ### Multi-Engine Solver (Recommended)
 
-The solver now supports multiple engines in a single FastAPI application:
+The solver now supports multiple engines in a single FastAPI application with a clean, modular structure:
 
 ```shell
 source venv/bin/activate
-python -m python_baseline.infra.cli run --host 0.0.0.0 --port 8080
+python -m src.infra.cli run --host 0.0.0.0 --port 8080
 ```
 
 Or using uvicorn directly:
 ```shell
-uvicorn python_baseline.api.app:app --host 0.0.0.0 --port 8080
+uvicorn src.api.app:app --host 0.0.0.0 --port 8080
+```
+
+Or using the entry point:
+```shell
+python -m src._server
 ```
 
 The solver will start on `http://localhost:8080` with the following endpoints:
+- `GET /` - Root endpoint with service information
 - `GET /healthz` - Health check
 - `GET /metrics` - Prometheus metrics
 - `POST /baseline/solve` - Baseline solver engine
 - `POST /mysolver/solve` - MySolver engine (stub implementation)
 - `POST /solve` - Default solver (configurable via DEFAULT_SOLVER_ROUTE)
-
-### Legacy Server (Deprecated)
-
-```shell
-source venv/bin/activate
-python -m src._server
-```
-
-The solver will start on `http://localhost:8080`
 
 ## Test the Solver
 
@@ -94,6 +91,23 @@ curl -X POST "http://127.0.0.1:8080/solve" \
 ### Prometheus Metrics
 ```shell
 curl http://localhost:8080/metrics
+```
+
+## Run Tests
+
+The project includes a comprehensive test suite:
+
+```shell
+# Run all tests
+pytest src/tests/
+
+# Run specific test categories
+pytest src/tests/test_api_health_metrics.py
+pytest src/tests/test_models_smoke.py
+pytest src/tests/test_multi_engine.py
+
+# Run with coverage
+pytest src/tests/ --cov=src
 ```
 
 ## Connect to the Orderbook
@@ -150,16 +164,42 @@ Navigate to [barn.cow.fi/](https://barn.cow.fi/) and place a tiny (real) order. 
 ```
 src/
 ├── _server.py              # Main server entry point
-├── models/                 # Data models
-│   ├── cow_auction.py     # CoW Protocol auction models
-│   ├── cow_solution.py    # CoW Protocol solution models
-│   ├── base/              # Reference utilities
-│   │   ├── token.py       # Base token model
-│   │   └── types.py       # Type definitions
-│   └── legacy/            # Legacy models (reference only)
-│       └── batch_auction.py
-└── examples/              # Example implementations
-    └── basic_solver.py    # Basic solver example
+├── api/                    # API endpoints and routing
+│   ├── app.py             # Main FastAPI application
+│   ├── healthz.py         # Health check endpoint
+│   ├── metrics.py         # Metrics collection
+│   └── routers/           # API routers
+│       ├── baseline.py    # Baseline solver router
+│       └── mysolver.py    # MySolver router
+├── domain/                # Domain models and business logic
+│   ├── auction.py         # Auction model
+│   ├── solution.py        # Solution model
+│   ├── order.py           # Order model
+│   ├── liquidity.py       # Liquidity model
+│   └── common.py          # Common domain types
+├── engines/               # Solver engine implementations
+│   ├── base.py            # Base engine protocol
+│   ├── baseline/          # Baseline solver engine
+│   │   └── engine.py      # Baseline implementation
+│   └── mysolver/          # Custom solver engine
+│       └── engine.py      # MySolver implementation
+├── infra/                 # Infrastructure and configuration
+│   ├── settings.py        # Application settings
+│   ├── logging.py         # Logging configuration
+│   ├── metrics.py         # Metrics infrastructure
+│   ├── di.py              # Dependency injection
+│   └── cli.py             # Command line interface
+├── utils/                 # Utility functions
+│   ├── bytes_conv.py      # Bytes conversion utilities
+│   ├── hexbytes.py       # Hex bytes utilities
+│   ├── mathx.py          # Math utilities
+│   ├── serialize.py      # Serialization utilities
+│   └── u256.py           # U256 utilities
+└── tests/                 # Test suite
+    ├── test_api_health_metrics.py
+    ├── test_api_solve_contract.py
+    ├── test_models_smoke.py
+    └── test_multi_engine.py
 
 data/
 ├── small_example.json     # Example auction data
@@ -168,17 +208,29 @@ data/
 
 ## Implementation Guide
 
-1. **Understand the Models**: Start by examining the new CoW Protocol models in `src/models/cow_auction.py` and `src/models/cow_solution.py`
-2. **Study Examples**: Check `src/examples/basic_solver.py` for implementation patterns
-3. **Implement Solver Logic**: Modify the solve endpoint in `src/_server.py`
+1. **Understand the Models**: Start by examining the domain models in `src/domain/` (auction.py, solution.py, order.py, etc.)
+2. **Study Engine Architecture**: Check `src/engines/base.py` for the engine protocol and `src/engines/baseline/engine.py` for implementation patterns
+3. **Implement Custom Solver**: Modify `src/engines/mysolver/engine.py` to implement your solver logic
 4. **Add Pathfinding**: Implement algorithms to find optimal trading paths
 5. **Handle AMMs**: Add support for different AMM protocols
 6. **Optimize**: Implement price optimization and MEV protection
+7. **Test**: Use the test suite in `src/tests/` to validate your implementation
+
+## Architecture
+
+The solver template now features a clean, modular architecture:
+
+- **API Layer**: FastAPI application with separate routers for each engine
+- **Domain Layer**: Business models and logic (auction, solution, order, etc.)
+- **Engine Layer**: Pluggable solver implementations (baseline, custom)
+- **Infrastructure Layer**: Configuration, logging, metrics, and dependency injection
+- **Utils Layer**: Shared utilities for math, serialization, and data conversion
+- **Test Layer**: Comprehensive test suite for all components
 
 ## Schema Compatibility
 
 This template now uses the current CoW Protocol schema:
-- **Input**: `CowAuction` model with proper field aliases
+- **Input**: `Auction` model with proper field aliases
 - **Output**: `Solutions` model matching the protocol specification
 - **Field Names**: Uses Python snake_case with automatic camelCase JSON conversion
 
