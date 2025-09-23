@@ -4,8 +4,8 @@ Liquidity domain model for CoW Protocol.
 This module contains liquidity models for different AMM types.
 """
 
-from typing import Dict, List, Optional
-from pydantic import BaseModel, Field, validator
+from typing import Dict, Optional
+from pydantic import BaseModel, Field, field_validator
 from .common import Address, U256
 
 

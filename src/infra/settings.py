@@ -105,7 +105,6 @@ class SolverConfig(BaseSettings):
                 "base_tokens": self.base_tokens
             }
 
-
 class Settings(BaseSettings):
     """Main application settings."""
     
