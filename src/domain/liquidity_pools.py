@@ -1,7 +1,7 @@
 from typing import Optional
 from dataclasses import dataclass
 from src.domain.eth import Address, U256
-from src.utils.amm_math import constant_product_out, constant_product_in
+from src.utils.amm_math import UniswapV2
 
 @dataclass
 class ConstantProductPool:
@@ -32,10 +32,10 @@ class ConstantProductPool:
             return None  # Tokens não encontrados na pool
         
         # Calcular output
-        output = constant_product_out(
+        output = UniswapV2.get_amount_out(
+            amount_in.value,
             reserve_in.value,
             reserve_out.value,
-            amount_in.value,
             self.fee
         )
         

@@ -131,14 +131,14 @@ class PathFinder:
             pool=liquidity.id,
             kind='constant_product',
             gas=int(liquidity.gas_estimate),
-            fee=int(liquidity.fee)
+            fee=int(float(liquidity.fee) * 10000)
         )
         graph.add_edge(
             token1, token0,
             pool=liquidity.id,
             kind='constant_product',
             gas=int(liquidity.gas_estimate),
-            fee=int(liquidity.fee)
+            fee=int(float(liquidity.fee) * 10000)
         )
     
     def _add_weighted_product_pool(self, graph: nx.DiGraph, liquidity: Liquidity):
@@ -154,14 +154,14 @@ class PathFinder:
                     pool=liquidity.id,
                     kind='weighted_product',
                     gas=int(liquidity.gas_estimate),
-                    fee=int(liquidity.fee)
+                    fee=int(float(liquidity.fee) * 10000)
                 )
                 graph.add_edge(
                     token_b, token_a,
                     pool=liquidity.id,
                     kind='weighted_product',
                     gas=int(liquidity.gas_estimate),
-                    fee=int(liquidity.fee)
+                    fee=int(float(liquidity.fee) * 10000)
                 )
     
     def _find_path_through_base(
