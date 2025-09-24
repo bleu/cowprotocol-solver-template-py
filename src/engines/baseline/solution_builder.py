@@ -24,7 +24,8 @@ class SolutionBuilder:
         auction_id: str,
         trades: List[Trade],
         interactions: List[Interaction],
-        prices: Dict[str, int]
+        prices: Dict[str, int],
+        order_index: int = 0
     ) -> Solution:
         """
         Build a complete solution.
@@ -34,6 +35,7 @@ class SolutionBuilder:
             trades: List of executed trades
             interactions: List of AMM interactions
             prices: Clearing prices for all tokens
+            order_index: Index of the order being processed (for ID generation)
             
         Returns:
             Complete Solution object
@@ -45,8 +47,8 @@ class SolutionBuilder:
             if trade.buy_token.lower() not in prices:
                 prices[trade.buy_token.lower()] = 10**18  # Default price
         
-        # Calculate solution ID (can be auction block number or unique ID)
-        solution_id = self._generate_solution_id(auction_id)
+        # Calculate solution ID following Rust implementation pattern
+        solution_id = self._generate_solution_id(auction_id, order_index)
         
         # Build the solution
         solution = Solution(
@@ -64,14 +66,23 @@ class SolutionBuilder:
         
         return solution
     
-    def _generate_solution_id(self, auction_id: str) -> int:
+    def _generate_solution_id(self, auction_id: str, order_index: int = 0) -> str:
         """
-        Generate a unique solution ID.
+        Generate a unique solution ID following Rust implementation pattern.
         
-        In production, this would be the block number or a unique identifier.
+        In the Rust implementation, the ID is generated as the order index (i as u64).
+        This ensures consistent behavior with the reference implementation.
+        
+        Args:
+            auction_id: Auction identifier (for logging)
+            order_index: Index of the order being processed (0-based)
+            
+        Returns:
+            String representation of the solution ID
         """
-        # Simple hash-based ID for now
-        return abs(hash(auction_id)) % (10**9)
+        # Follow Rust implementation: use order index as ID
+        # In Rust: .with_id(solution::Id(i as u64))
+        return str(order_index)
     
     def validate_solution(self, solution: Solution) -> bool:
         """
