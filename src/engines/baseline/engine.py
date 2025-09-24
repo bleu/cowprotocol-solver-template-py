@@ -14,6 +14,7 @@ from src.domain.order import Order
 from src.engines.baseline.cow_matcher import CowMatcher
 from src.engines.baseline.pathfinder import PathFinder
 from src.engines.baseline.solution_builder import SolutionBuilder
+from src.utils.validation import validate_auction
 
 
 class BaselineEngine:
@@ -58,7 +59,8 @@ class BaselineEngine:
             f"chain={weth_address}, "
             f"base_tokens={len(self.base_tokens)}, "
             f"max_hops={max_hops}"
-        )   
+        )
+    
     async def solve(self, auction: Auction) -> Solutions:
         """
         Solve auction using baseline algorithm.
@@ -70,7 +72,7 @@ class BaselineEngine:
         4. Optimize prices
         5. Build final solution
         """
-        if not self._validate_auction(auction):
+        if not validate_auction(auction):
             return Solutions(solutions=[])
             
         try:

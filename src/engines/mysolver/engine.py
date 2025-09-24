@@ -6,6 +6,7 @@ import logging
 from src.domain.auction import Auction
 from src.domain.solution import Solution, Solutions
 from src.engines.base import SolverEngine
+from src.utils.validation import validate_auction
 
 
 class MySolverEngine:
@@ -30,6 +31,9 @@ class MySolverEngine:
         Returns:
             Solutions object containing the solver's solutions
         """
+        if not validate_auction(auction):
+            return Solutions(solutions=[])
+        
         self.logger.info(f"Solving auction {auction.id} with MySolver engine")
         self.logger.info(f"Orders: {len(auction.orders)}, Tokens: {len(auction.tokens)}")
         
@@ -43,26 +47,3 @@ class MySolverEngine:
         
         return Solutions(solutions=[solution])
     
-    def _validate_auction(self, auction: Auction) -> bool:
-        """
-        Validate the auction data.
-        
-        Args:
-            auction: The auction to validate
-            
-        Returns:
-            True if valid, False otherwise
-        """
-        # Basic validation
-        if not auction.id:
-            return False
-        
-        if not auction.orders:
-            self.logger.warning("Auction has no orders")
-            return False
-        
-        if not auction.tokens:
-            self.logger.warning("Auction has no tokens")
-            return False
-        
-        return True
