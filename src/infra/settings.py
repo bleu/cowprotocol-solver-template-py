@@ -125,6 +125,11 @@ class Settings(BaseSettings):
         pattern="^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$"
     )
     
+    log_format: str = Field(
+        default="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        description="Log format string"
+    )
+    
     # Include solver configuration
     solver: SolverConfig = Field(default_factory=SolverConfig)
     
