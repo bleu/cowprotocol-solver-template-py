@@ -108,6 +108,12 @@ class Solution(BaseModel):
     liquidity_interactions: List[LiquidityInteraction] = Field(default_factory=list, description="Liquidity interactions")
     custom_interactions: List[CustomInteraction] = Field(default_factory=list, description="Custom interactions")
     allowances: List[Allowance] = Field(default_factory=list, description="Token allowances")
+    
+    model_config = {
+        "json_encoders": {
+            U256: str  # convert U256 to string automatically
+        }
+    }
 
 
 class Solutions(BaseModel):

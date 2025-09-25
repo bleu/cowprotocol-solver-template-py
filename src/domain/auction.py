@@ -19,8 +19,9 @@ class Token(BaseModel):
     available_balance: Optional[str] = Field(None, description="Available balance")
     trusted: Optional[bool] = Field(False, description="Trusted token")
     
-    class Config:
-        extra = "ignore"
+    model_config = {
+        "extra": "ignore"
+    }
 
 
 class Order(BaseModel):
@@ -47,9 +48,10 @@ class Order(BaseModel):
     signing_scheme: str = Field("eip712", alias="signingScheme", description="Signing scheme")
     signature: str = Field(..., description="Order signature")
     
-    class Config:
-        extra = "ignore"
-        allow_population_by_field_name = True
+    model_config = {
+        "extra": "ignore",
+        "populate_by_name": True
+    }
 
 
 class Liquidity(BaseModel):
@@ -63,9 +65,10 @@ class Liquidity(BaseModel):
     tokens: Dict[str, Dict[str, str]] = Field(default_factory=dict, description="Token balances")
     fee: str = Field(..., description="Trading fee")
     
-    class Config:
-        extra = "ignore"
-        allow_population_by_field_name = True
+    model_config = {
+        "extra": "ignore",
+        "populate_by_name": True
+    }
 
 
 class Auction(BaseModel):
@@ -79,6 +82,7 @@ class Auction(BaseModel):
     deadline: str = Field(..., description="Auction deadline (ISO 8601)")
     surplus_capturing_jit_order_owners: List[str] = Field(default_factory=list, alias="surplusCapturingJitOrderOwners", description="JIT order owners")
     
-    class Config:
-        extra = "ignore"  # Ignore unknown fields
-        allow_population_by_field_name = True
+    model_config = {
+        "extra": "ignore",  # Ignore unknown fields
+        "populate_by_name": True
+    }
