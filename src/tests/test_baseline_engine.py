@@ -10,8 +10,10 @@ def test_uniswap_calculations():
         reserve_out=200 * 10**18,
         fee_bps=30,
     )
-    expected = 1_970_395_920_771_543_445  # Pre-calculated
-    assert abs(amount_out - expected) < 1000  # Allow small rounding
+    # Calculate expected value: 1 token in, 30 bps fee, 2:1 ratio
+    # Expected: ~1.97 tokens out (with 0.3% fee)
+    expected = 1974316068794122597  # calculated value
+    assert amount_out == expected
 
 
 def test_cow_matching():

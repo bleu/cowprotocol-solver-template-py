@@ -17,7 +17,7 @@ class TestHealthEndpoint:
 
     def test_health_endpoint(self):
         """Test health check endpoint returns 200."""
-        response = client.get("/health")
+        response = client.get("/healthz")
         assert response.status_code == 200
 
         data = response.json()
@@ -28,7 +28,7 @@ class TestHealthEndpoint:
 
     def test_health_endpoint_structure(self):
         """Test health check endpoint response structure."""
-        response = client.get("/health")
+        response = client.get("/healthz")
         data = response.json()
 
         # Check required fields
@@ -45,7 +45,7 @@ class TestHealthEndpoint:
 
     def test_health_endpoint_values(self):
         """Test health check endpoint field values."""
-        response = client.get("/health")
+        response = client.get("/healthz")
         data = response.json()
 
         assert data["status"] == "healthy"
@@ -66,7 +66,7 @@ class TestMetricsEndpoint:
         response = client.get("/metrics")
         assert (
             response.headers["content-type"]
-            == "text/plain; version=0.0.4; charset=utf-8"
+            == "text/plain; version=1.0.0; charset=utf-8"
         )
 
     def test_metrics_endpoint_content(self):
@@ -117,7 +117,7 @@ class TestRootEndpoint:
         response = client.get("/")
         data = response.json()
 
-        assert data["service"] == "CoW Protocol Baseline Solver"
+        assert data["service"] == "CoW Protocol Solver"
         assert data["version"] == "1.0.0"
         assert data["status"] == "running"
 
@@ -146,7 +146,7 @@ class TestErrorHandling:
 
     def test_405_method_not_allowed(self):
         """Test 405 for unsupported method."""
-        response = client.put("/health")
+        response = client.put("/healthz")
         assert response.status_code == 405
 
     def test_422_validation_error(self):

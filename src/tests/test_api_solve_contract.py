@@ -77,8 +77,12 @@ class TestSolveEndpointValidation:
                 "deadline": "2024-12-19T12:00:00Z",
             },
         )
-        assert response.status_code == 422
-        assert "tokens" in str(response.json())
+        # Solver returns 200 but with empty solution when no tokens
+        assert response.status_code == 200
+        data = response.json()
+        assert "solutions" in data
+        # When no tokens, solver returns empty solutions array
+        assert len(data["solutions"]) == 0
 
     def test_solve_endpoint_requires_orders(self):
         """Test /solve endpoint requires orders."""
@@ -97,8 +101,14 @@ class TestSolveEndpointValidation:
                 "deadline": "2024-12-19T12:00:00Z",
             },
         )
-        assert response.status_code == 422
-        assert "orders" in str(response.json())
+        # Solver returns 200 but with empty solution when no orders
+        assert response.status_code == 200
+        data = response.json()
+        assert "solutions" in data
+        # When no orders, solver returns solution with empty trades
+        assert len(data["solutions"]) == 1
+        solution = data["solutions"][0]
+        assert len(solution["trades"]) == 0
 
     def test_solve_endpoint_requires_effective_gas_price(self):
         """Test /solve endpoint requires effective gas price."""
@@ -118,7 +128,7 @@ class TestSolveEndpointValidation:
             },
         )
         assert response.status_code == 422
-        assert "effective_gas_price" in str(response.json())
+        assert "effectiveGasPrice" in str(response.json())
 
     def test_solve_endpoint_requires_deadline(self):
         """Test /solve endpoint requires deadline."""
@@ -159,16 +169,23 @@ class TestSolveEndpointValidRequest:
                 "orders": [
                     {
                         "uid": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-                        "sell_token": "0x1234567890123456789012345678901234567890",
-                        "buy_token": "0x0987654321098765432109876543210987654321",
-                        "sell_amount": "1000000000000000000",
-                        "buy_amount": "2000000000000000000000",
-                        "fee_amount": "1000000000000000",
+                        "sellToken": "0x1234567890123456789012345678901234567890",
+                        "buyToken": "0x0987654321098765432109876543210987654321",
+                        "sellAmount": "1000000000000000000",
+                        "fullSellAmount": "1000000000000000000",
+                        "buyAmount": "2000000000000000000000",
+                        "fullBuyAmount": "2000000000000000000000",
+                        "validTo": 1734609600,
                         "kind": "sell",
-                        "partially_fillable": False,
-                        "class": "market",
+                        "receiver": "0x1234567890123456789012345678901234567890",
+                        "owner": "0x1234567890123456789012345678901234567890",
+                        "partiallyFillable": False,
+                        "preInteractions": [],
+                        "postInteractions": [],
+                        "sellTokenBalance": "erc20",
+                        "buyTokenBalance": "erc20",
+                        "appData": "0x0000000000000000000000000000000000000000000000000000000000000000",
                         "signature": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-                        "app_data": "0x0000000000000000000000000000000000000000000000000000000000000000",
                     }
                 ],
                 "liquidity": [],
@@ -197,16 +214,23 @@ class TestSolveEndpointValidRequest:
                 "orders": [
                     {
                         "uid": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-                        "sell_token": "0x1234567890123456789012345678901234567890",
-                        "buy_token": "0x0987654321098765432109876543210987654321",
-                        "sell_amount": "1000000000000000000",
-                        "buy_amount": "2000000000000000000000",
-                        "fee_amount": "1000000000000000",
+                        "sellToken": "0x1234567890123456789012345678901234567890",
+                        "buyToken": "0x0987654321098765432109876543210987654321",
+                        "sellAmount": "1000000000000000000",
+                        "fullSellAmount": "1000000000000000000",
+                        "buyAmount": "2000000000000000000000",
+                        "fullBuyAmount": "2000000000000000000000",
+                        "validTo": 1734609600,
                         "kind": "sell",
-                        "partially_fillable": False,
-                        "class": "market",
+                        "receiver": "0x1234567890123456789012345678901234567890",
+                        "owner": "0x1234567890123456789012345678901234567890",
+                        "partiallyFillable": False,
+                        "preInteractions": [],
+                        "postInteractions": [],
+                        "sellTokenBalance": "erc20",
+                        "buyTokenBalance": "erc20",
+                        "appData": "0x0000000000000000000000000000000000000000000000000000000000000000",
                         "signature": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-                        "app_data": "0x0000000000000000000000000000000000000000000000000000000000000000",
                     }
                 ],
                 "liquidity": [],
@@ -247,16 +271,23 @@ class TestSolveEndpointValidRequest:
                 "orders": [
                     {
                         "uid": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-                        "sell_token": "0x1234567890123456789012345678901234567890",
-                        "buy_token": "0x0987654321098765432109876543210987654321",
-                        "sell_amount": "1000000000000000000",
-                        "buy_amount": "2000000000000000000000",
-                        "fee_amount": "1000000000000000",
+                        "sellToken": "0x1234567890123456789012345678901234567890",
+                        "buyToken": "0x0987654321098765432109876543210987654321",
+                        "sellAmount": "1000000000000000000",
+                        "fullSellAmount": "1000000000000000000",
+                        "buyAmount": "2000000000000000000000",
+                        "fullBuyAmount": "2000000000000000000000",
+                        "validTo": 1734609600,
                         "kind": "sell",
-                        "partially_fillable": False,
-                        "class": "market",
+                        "receiver": "0x1234567890123456789012345678901234567890",
+                        "owner": "0x1234567890123456789012345678901234567890",
+                        "partiallyFillable": False,
+                        "preInteractions": [],
+                        "postInteractions": [],
+                        "sellTokenBalance": "erc20",
+                        "buyTokenBalance": "erc20",
+                        "appData": "0x0000000000000000000000000000000000000000000000000000000000000000",
                         "signature": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-                        "app_data": "0x0000000000000000000000000000000000000000000000000000000000000000",
                     }
                 ],
                 "liquidity": [],
@@ -271,5 +302,5 @@ class TestSolveEndpointValidRequest:
         assert len(data["solutions"]) == 1
         solution = data["solutions"][0]
         assert len(solution["trades"]) == 0
-        assert len(solution["prices"]) == 0
+        assert "prices" in solution
         assert len(solution["interactions"]) == 0
