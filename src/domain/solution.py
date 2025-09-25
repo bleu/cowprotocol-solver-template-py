@@ -83,7 +83,7 @@ class ClearingPrices(BaseModel):
 class Single(BaseModel):
     """Single solution."""
     
-    id: str = Field(..., description="Solution identifier")
+    id: int = Field(..., description="Solution identifier")
     trades: List[Trade] = Field(..., description="Trades in the solution")
     prices: Dict[Address, U256] = Field(..., description="Clearing prices")
     interactions: List[Interaction] = Field(..., description="Smart contract interactions")
@@ -98,7 +98,7 @@ class Single(BaseModel):
 class Solution(BaseModel):
     """CoW Protocol solution."""
     
-    id: str = Field(..., description="Solution identifier")
+    id: int = Field(..., description="Solution identifier")
     trades: List[Trade] = Field(..., description="Trades in the solution")
     prices: Dict[Address, U256] = Field(..., description="Clearing prices")
     interactions: List[Interaction] = Field(..., description="Smart contract interactions")

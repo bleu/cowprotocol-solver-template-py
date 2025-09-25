@@ -66,7 +66,7 @@ class SolutionBuilder:
         
         return solution
     
-    def _generate_solution_id(self, auction_id: str, order_index: int = 0) -> str:
+    def _generate_solution_id(self, auction_id: str, order_index: int = 0) -> int:
         """
         Generate a unique solution ID following Rust implementation pattern.
         
@@ -78,11 +78,11 @@ class SolutionBuilder:
             order_index: Index of the order being processed (0-based)
             
         Returns:
-            String representation of the solution ID
+            Integer solution ID (u64 in Rust)
         """
         # Follow Rust implementation: use order index as ID
         # In Rust: .with_id(solution::Id(i as u64))
-        return str(order_index)
+        return order_index
     
     def validate_solution(self, solution: Solution) -> bool:
         """
