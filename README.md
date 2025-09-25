@@ -46,22 +46,18 @@ python -m src.infra.cli config
 
 ## Run Solver Server
 
-### Multi-Engine Solver (Recommended)
-
-The solver now supports multiple engines in a single FastAPI application with a clean, modular structure:
+The solver supports multiple engines in a single FastAPI application with a clean, modular structure:
 
 ```shell
+# Using Makefile (Recommended)
+make run
+
+# Or manually
 source venv/bin/activate
 python -m src.infra.cli run --host 0.0.0.0 --port 8080
-```
 
-Or using uvicorn directly:
-```shell
+# Alternative methods
 uvicorn src.api.app:app --host 0.0.0.0 --port 8080
-```
-
-Or using the entry point:
-```shell
 python -m src._server
 ```
 
@@ -109,6 +105,51 @@ curl -X POST "http://127.0.0.1:8080/solve" \
 curl http://localhost:8080/metrics
 ```
 
+## Development Commands
+
+The project includes a Makefile with convenient development commands:
+
+```shell
+# Show all available commands
+make help
+
+# Start the solver server
+make run
+
+# Format code with black
+make format
+
+# Run all tests
+make test
+
+# Install dependencies
+make install
+
+# Clean up temporary files
+make clean
+```
+
+### Manual Commands
+
+If you prefer to run commands manually:
+
+```shell
+# Activate virtual environment
+source venv/bin/activate
+
+# Start server
+python -m src.infra.cli run --host 0.0.0.0 --port 8080
+
+# Format code
+python -m black src/ --line-length 88
+
+# Run tests
+python -m pytest src/tests/ -v
+
+# Show configuration
+python -m src.infra.cli config
+```
+
 ## Run Tests
 
 The project includes a comprehensive test suite:
@@ -132,8 +173,8 @@ pytest src/tests/
 
 # Run specific test categories
 pytest src/tests/test_api_health_metrics.py
-pytest src/tests/test_models_smoke.py
-pytest src/tests/test_multi_engine.py
+pytest src/tests/test_baseline_engine.py
+pytest src/tests/test_config.py
 
 # Run with coverage
 pytest src/tests/ --cov=src
@@ -220,7 +261,12 @@ src/
 ├── engines/               # Solver engine implementations
 │   ├── base.py            # Base engine protocol
 │   ├── baseline/          # Baseline solver engine
-│   │   └── engine.py      # Baseline implementation
+│   │   ├── engine.py      # Baseline implementation
+│   │   ├── pools.py       # Pool handling and AMM integration
+│   │   ├── interactions.py # Interaction encoding for DEXs
+│   │   ├── price_finder.py # Price calculation and clearing
+│   │   ├── path_finder.py # Path finding algorithms
+│   │   └── solution_builder.py # Solution construction
 │   └── mysolver/          # Custom solver engine
 │       └── engine.py      # MySolver implementation
 ├── infra/                 # Infrastructure and configuration
@@ -233,12 +279,14 @@ src/
 │   ├── bytes_conv.py      # Bytes conversion utilities
 │   ├── hexbytes.py       # Hex bytes utilities
 │   ├── mathx.py          # Math utilities
+│   ├── amm_math.py       # AMM mathematical functions
 │   ├── serialize.py      # Serialization utilities
 │   └── u256.py           # U256 utilities
 └── tests/                 # Test suite
     ├── test_api_health_metrics.py
     ├── test_api_solve_contract.py
-    ├── test_models_smoke.py
+    ├── test_baseline_engine.py
+    ├── test_config.py
     └── test_multi_engine.py
 
 data/
