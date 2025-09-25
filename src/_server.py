@@ -1,6 +1,7 @@
 """
 This is the project's Entry point.
 """
+
 from __future__ import annotations
 
 import argparse

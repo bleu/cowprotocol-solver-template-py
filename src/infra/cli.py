@@ -14,7 +14,7 @@ from .logging import setup_logging, log_startup, log_shutdown
 app = typer.Typer(
     name="cow-solver-baseline",
     help="CoW Protocol Baseline Solver",
-    add_completion=False
+    add_completion=False,
 )
 
 
@@ -22,10 +22,14 @@ app = typer.Typer(
 def run(
     host: Optional[str] = typer.Option(None, "--host", "-h", help="Server host"),
     port: Optional[int] = typer.Option(None, "--port", "-p", help="Server port"),
-    log_level: Optional[str] = typer.Option(None, "--log-level", "-l", help="Log level"),
-    workers: int = typer.Option(1, "--workers", "-w", help="Number of worker processes"),
+    log_level: Optional[str] = typer.Option(
+        None, "--log-level", "-l", help="Log level"
+    ),
+    workers: int = typer.Option(
+        1, "--workers", "-w", help="Number of worker processes"
+    ),
     reload: bool = typer.Option(False, "--reload", "-r", help="Enable auto-reload"),
-    access_log: bool = typer.Option(True, "--access-log", help="Enable access logging")
+    access_log: bool = typer.Option(True, "--access-log", help="Enable access logging"),
 ):
     """
     Run the baseline solver server.
@@ -37,13 +41,13 @@ def run(
         settings.port = port
     if log_level:
         settings.log_level = log_level
-    
+
     # Setup logging
     setup_logging()
-    
+
     # Log startup
     log_startup("CoW Protocol Solver", "1.0.0", settings.host, settings.port)
-    
+
     try:
         # Run the server
         uvicorn.run(
@@ -53,7 +57,7 @@ def run(
             workers=workers,
             reload=reload,
             access_log=access_log,
-            log_level=settings.log_level.lower()
+            log_level=settings.log_level.lower(),
         )
     except KeyboardInterrupt:
         log_shutdown("CoW Protocol Solver")

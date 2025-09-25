@@ -13,19 +13,18 @@ class SolverConfig(BaseSettings):
     """
     Baseline solver configuration.
     """
-    
+
     # Network configuration
     chain_id: int = Field(
-        default=1,  # Mainnet
-        description="Chain ID (1=mainnet, 100=gnosis)"
+        default=1, description="Chain ID (1=mainnet, 100=gnosis)"  # Mainnet
     )
-    
+
     # WETH address (changes per network)
     weth_address: str = Field(
         default="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",  # Mainnet WETH
-        description="Wrapped ETH address for the network"
+        description="Wrapped ETH address for the network",
     )
-    
+
     # Base tokens for pathfinding (liquid tokens for intermediary routes)
     base_tokens: List[str] = Field(
         default=[
@@ -35,49 +34,48 @@ class SolverConfig(BaseSettings):
             "0x6B175474E89094C44Da98b954EedeAC495271d0F",  # DAI
             "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",  # WBTC
         ],
-        description="Tokens to consider as intermediary hops in pathfinding"
+        description="Tokens to consider as intermediary hops in pathfinding",
     )
-    
+
     # Pathfinding configuration
     max_hops: int = Field(
         default=2,
         ge=0,
         le=3,
-        description="Maximum hops in a trading path (0=direct, 1=one intermediary, 2=two intermediaries)"
+        description="Maximum hops in a trading path (0=direct, 1=one intermediary, 2=two intermediaries)",
     )
-    
-    # Partial fill configuration  
+
+    # Partial fill configuration
     max_partial_attempts: int = Field(
         default=5,
         ge=1,
         le=10,
-        description="Maximum attempts to solve a partially fillable order by halving amounts"
+        description="Maximum attempts to solve a partially fillable order by halving amounts",
     )
-    
+
     # Gas configuration
     solution_gas_offset: int = Field(
         default=50000,
-        description="Gas units added to route estimate for settlement overhead"
+        description="Gas units added to route estimate for settlement overhead",
     )
-    
+
     # Price estimation
     native_token_price_estimation_amount: str = Field(
         default="1000000000000000000",  # 1 ETH in wei
-        description="Amount of native token to use for price estimation"
+        description="Amount of native token to use for price estimation",
     )
-    
+
     # Optional Uniswap V3 support
     uni_v3_quoter_address: Optional[str] = Field(
-        default=None,
-        description="Uniswap V3 Quoter V2 contract address (optional)"
+        default=None, description="Uniswap V3 Quoter V2 contract address (optional)"
     )
-    
+
     # Gnosis Chain specific addresses (when chain_id=100)
     gnosis_weth_address: str = Field(
         default="0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",  # WXDAI on Gnosis
-        description="WETH address on Gnosis Chain"
+        description="WETH address on Gnosis Chain",
     )
-    
+
     gnosis_base_tokens: List[str] = Field(
         default=[
             "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",  # WXDAI
@@ -85,54 +83,51 @@ class SolverConfig(BaseSettings):
             "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83",  # USDC
             "0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1",  # WETH on Gnosis
         ],
-        description="Base tokens for Gnosis Chain"
+        description="Base tokens for Gnosis Chain",
     )
-    
+
     class Config:
         env_prefix = "SOLVER_"
         env_file = ".env"
-    
+
     def get_network_config(self):
         """Get configuration based on chain_id."""
         if self.chain_id == 100:  # Gnosis Chain
             return {
                 "weth": self.gnosis_weth_address,
-                "base_tokens": self.gnosis_base_tokens
+                "base_tokens": self.gnosis_base_tokens,
             }
         else:  # Mainnet or others
-            return {
-                "weth": self.weth_address,
-                "base_tokens": self.base_tokens
-            }
+            return {"weth": self.weth_address, "base_tokens": self.base_tokens}
+
 
 class Settings(BaseSettings):
     """Main application settings."""
-    
+
     # API Configuration
     host: str = Field(default="0.0.0.0", env="HOST")
     port: int = Field(default=8080, env="PORT")
-    
+
     # Solver Configuration
     default_solver_route: str = Field(
         default="baseline",
         pattern="^(baseline|mysolver)$",
-        description="Default solver engine to use for /solve endpoint"
+        description="Default solver engine to use for /solve endpoint",
     )
-    
+
     # Logging
     log_level: str = Field(
-        default="INFO",
-        pattern="^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$"
+        default="INFO", pattern="^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$"
     )
-    
+
     log_format: str = Field(
         default="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        description="Log format string"
+        description="Log format string",
     )
-    
+
     # Include solver configuration
     solver: SolverConfig = Field(default_factory=SolverConfig)
-    
+
     class Config:
         env_file = ".env"
         case_sensitive = False

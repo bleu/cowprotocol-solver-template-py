@@ -13,21 +13,19 @@ from .settings import settings
 def setup_logging(log_level: Optional[str] = None) -> None:
     """
     Setup structured logging.
-    
+
     Args:
         log_level: Optional log level override
     """
     level = log_level or settings.log_level
-    
+
     # Configure root logger
     logging.basicConfig(
         level=getattr(logging, level.upper()),
         format=settings.log_format,
-        handlers=[
-            logging.StreamHandler(sys.stdout)
-        ]
+        handlers=[logging.StreamHandler(sys.stdout)],
     )
-    
+
     # Configure specific loggers
     logging.getLogger("uvicorn").setLevel(logging.INFO)
     logging.getLogger("fastapi").setLevel(logging.INFO)
@@ -37,10 +35,10 @@ def setup_logging(log_level: Optional[str] = None) -> None:
 def get_logger(name: str) -> logging.Logger:
     """
     Get a logger instance.
-    
+
     Args:
         name: Logger name
-        
+
     Returns:
         Logger instance
     """
@@ -50,7 +48,7 @@ def get_logger(name: str) -> logging.Logger:
 def log_request(method: str, endpoint: str, status: int, duration: float) -> None:
     """
     Log a request.
-    
+
     Args:
         method: HTTP method
         endpoint: Endpoint path
@@ -63,10 +61,12 @@ def log_request(method: str, endpoint: str, status: int, duration: float) -> Non
     )
 
 
-def log_solution(auction_id: str, order_count: int, solution_count: int, duration: float) -> None:
+def log_solution(
+    auction_id: str, order_count: int, solution_count: int, duration: float
+) -> None:
     """
     Log a solution generation.
-    
+
     Args:
         auction_id: Auction identifier
         order_count: Number of orders
@@ -79,10 +79,12 @@ def log_solution(auction_id: str, order_count: int, solution_count: int, duratio
     )
 
 
-def log_error(error_type: str, message: str, exception: Optional[Exception] = None) -> None:
+def log_error(
+    error_type: str, message: str, exception: Optional[Exception] = None
+) -> None:
     """
     Log an error.
-    
+
     Args:
         error_type: Error type
         message: Error message
@@ -95,10 +97,12 @@ def log_error(error_type: str, message: str, exception: Optional[Exception] = No
         logger.error(f"Error: {error_type} - {message}")
 
 
-def log_performance(operation: str, duration: float, details: Optional[str] = None) -> None:
+def log_performance(
+    operation: str, duration: float, details: Optional[str] = None
+) -> None:
     """
     Log a performance metric.
-    
+
     Args:
         operation: Operation name
         duration: Duration in seconds
@@ -111,10 +115,12 @@ def log_performance(operation: str, duration: float, details: Optional[str] = No
         logger.info(f"Performance: {operation} - Duration: {duration:.3f}s")
 
 
-def log_auction(auction_id: str, order_count: int, token_count: int, liquidity_count: int) -> None:
+def log_auction(
+    auction_id: str, order_count: int, token_count: int, liquidity_count: int
+) -> None:
     """
     Log an auction.
-    
+
     Args:
         auction_id: Auction identifier
         order_count: Number of orders
@@ -130,7 +136,7 @@ def log_auction(auction_id: str, order_count: int, token_count: int, liquidity_c
 def log_startup(service_name: str, version: str, host: str, port: int) -> None:
     """
     Log service startup.
-    
+
     Args:
         service_name: Service name
         version: Service version
@@ -144,7 +150,7 @@ def log_startup(service_name: str, version: str, host: str, port: int) -> None:
 def log_shutdown(service_name: str) -> None:
     """
     Log service shutdown.
-    
+
     Args:
         service_name: Service name
     """
@@ -155,7 +161,7 @@ def log_shutdown(service_name: str) -> None:
 def log_health_check(status: str, details: Optional[str] = None) -> None:
     """
     Log a health check.
-    
+
     Args:
         status: Health status
         details: Optional details
@@ -170,7 +176,7 @@ def log_health_check(status: str, details: Optional[str] = None) -> None:
 def log_metrics(metric_name: str, value: float, labels: Optional[dict] = None) -> None:
     """
     Log a metric.
-    
+
     Args:
         metric_name: Metric name
         value: Metric value

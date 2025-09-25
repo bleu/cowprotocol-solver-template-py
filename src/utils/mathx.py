@@ -16,10 +16,10 @@ getcontext().prec = 100
 def to_decimal(value: Union[int, str, float, Decimal]) -> Decimal:
     """
     Convert value to Decimal with high precision.
-    
+
     Args:
         value: Value to convert
-        
+
     Returns:
         Decimal value
     """
@@ -31,10 +31,10 @@ def to_decimal(value: Union[int, str, float, Decimal]) -> Decimal:
 def from_decimal(value: Decimal) -> str:
     """
     Convert Decimal to string.
-    
+
     Args:
         value: Decimal value
-        
+
     Returns:
         String representation
     """
@@ -44,11 +44,11 @@ def from_decimal(value: Decimal) -> str:
 def div_ceil(a: Union[int, Decimal], b: Union[int, Decimal]) -> int:
     """
     Ceiling division.
-    
+
     Args:
         a: Dividend
         b: Divisor
-        
+
     Returns:
         Ceiling of a / b
     """
@@ -60,11 +60,11 @@ def div_ceil(a: Union[int, Decimal], b: Union[int, Decimal]) -> int:
 def div_floor(a: Union[int, Decimal], b: Union[int, Decimal]) -> int:
     """
     Floor division.
-    
+
     Args:
         a: Dividend
         b: Divisor
-        
+
     Returns:
         Floor of a / b
     """
@@ -73,15 +73,17 @@ def div_floor(a: Union[int, Decimal], b: Union[int, Decimal]) -> int:
     return int(math.floor(a / b))
 
 
-def mul_div(a: Union[int, Decimal], b: Union[int, Decimal], c: Union[int, Decimal]) -> int:
+def mul_div(
+    a: Union[int, Decimal], b: Union[int, Decimal], c: Union[int, Decimal]
+) -> int:
     """
     Multiply and divide with precision.
-    
+
     Args:
         a: First factor
         b: Second factor
         c: Divisor
-        
+
     Returns:
         (a * b) / c
     """
@@ -91,15 +93,17 @@ def mul_div(a: Union[int, Decimal], b: Union[int, Decimal], c: Union[int, Decima
     return int((a * b) / c)
 
 
-def mul_div_round(a: Union[int, Decimal], b: Union[int, Decimal], c: Union[int, Decimal]) -> int:
+def mul_div_round(
+    a: Union[int, Decimal], b: Union[int, Decimal], c: Union[int, Decimal]
+) -> int:
     """
     Multiply and divide with rounding.
-    
+
     Args:
         a: First factor
         b: Second factor
         c: Divisor
-        
+
     Returns:
         Round((a * b) / c)
     """
@@ -112,10 +116,10 @@ def mul_div_round(a: Union[int, Decimal], b: Union[int, Decimal], c: Union[int, 
 def sqrt(value: Union[int, Decimal]) -> int:
     """
     Square root with precision.
-    
+
     Args:
         value: Value to take square root of
-        
+
     Returns:
         Square root as integer
     """
@@ -126,26 +130,26 @@ def sqrt(value: Union[int, Decimal]) -> int:
 def pow(value: Union[int, Decimal], exp: Union[int, Decimal]) -> int:
     """
     Power operation with precision.
-    
+
     Args:
         value: Base value
         exp: Exponent
-        
+
     Returns:
         Power result as integer
     """
     value = to_decimal(value)
     exp = to_decimal(exp)
-    return int(value ** exp)
+    return int(value**exp)
 
 
 def log2(value: Union[int, Decimal]) -> int:
     """
     Base-2 logarithm.
-    
+
     Args:
         value: Value to take log of
-        
+
     Returns:
         Log2 result as integer
     """
@@ -156,10 +160,10 @@ def log2(value: Union[int, Decimal]) -> int:
 def log10(value: Union[int, Decimal]) -> int:
     """
     Base-10 logarithm.
-    
+
     Args:
         value: Value to take log of
-        
+
     Returns:
         Log10 result as integer
     """
@@ -170,11 +174,11 @@ def log10(value: Union[int, Decimal]) -> int:
 def min(a: Union[int, Decimal], b: Union[int, Decimal]) -> int:
     """
     Minimum of two values.
-    
+
     Args:
         a: First value
         b: Second value
-        
+
     Returns:
         Minimum value
     """
@@ -186,11 +190,11 @@ def min(a: Union[int, Decimal], b: Union[int, Decimal]) -> int:
 def max(a: Union[int, Decimal], b: Union[int, Decimal]) -> int:
     """
     Maximum of two values.
-    
+
     Args:
         a: First value
         b: Second value
-        
+
     Returns:
         Maximum value
     """
@@ -199,15 +203,19 @@ def max(a: Union[int, Decimal], b: Union[int, Decimal]) -> int:
     return int(max(a, b))
 
 
-def clamp(value: Union[int, Decimal], min_val: Union[int, Decimal], max_val: Union[int, Decimal]) -> int:
+def clamp(
+    value: Union[int, Decimal],
+    min_val: Union[int, Decimal],
+    max_val: Union[int, Decimal],
+) -> int:
     """
     Clamp value between min and max.
-    
+
     Args:
         value: Value to clamp
         min_val: Minimum value
         max_val: Maximum value
-        
+
     Returns:
         Clamped value
     """
@@ -220,10 +228,10 @@ def clamp(value: Union[int, Decimal], min_val: Union[int, Decimal], max_val: Uni
 def abs(value: Union[int, Decimal]) -> int:
     """
     Absolute value.
-    
+
     Args:
         value: Value to take absolute value of
-        
+
     Returns:
         Absolute value
     """
@@ -234,10 +242,10 @@ def abs(value: Union[int, Decimal]) -> int:
 def sign(value: Union[int, Decimal]) -> int:
     """
     Sign of value.
-    
+
     Args:
         value: Value to get sign of
-        
+
     Returns:
         -1, 0, or 1
     """
@@ -253,10 +261,10 @@ def sign(value: Union[int, Decimal]) -> int:
 def is_zero(value: Union[int, Decimal]) -> bool:
     """
     Check if value is zero.
-    
+
     Args:
         value: Value to check
-        
+
     Returns:
         True if zero, False otherwise
     """
@@ -267,10 +275,10 @@ def is_zero(value: Union[int, Decimal]) -> bool:
 def is_positive(value: Union[int, Decimal]) -> bool:
     """
     Check if value is positive.
-    
+
     Args:
         value: Value to check
-        
+
     Returns:
         True if positive, False otherwise
     """
@@ -281,10 +289,10 @@ def is_positive(value: Union[int, Decimal]) -> bool:
 def is_negative(value: Union[int, Decimal]) -> bool:
     """
     Check if value is negative.
-    
+
     Args:
         value: Value to check
-        
+
     Returns:
         True if negative, False otherwise
     """

@@ -10,8 +10,12 @@ import logging
 
 from .healthz import health_check
 from .metrics import (
-    record_request, record_solution, record_auction_orders,
-    set_active_requests, get_metrics, get_metrics_content_type
+    record_request,
+    record_solution,
+    record_auction_orders,
+    set_active_requests,
+    get_metrics,
+    get_metrics_content_type,
 )
 from .routers import baseline, mysolver
 from src.domain.auction import Auction
@@ -25,7 +29,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="CoW Protocol Solver",
     description="Multi-engine solver implementation for CoW Protocol auctions",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Add middleware
@@ -44,37 +48,37 @@ app.add_middleware(
 async def metrics_middleware(request: Request, call_next):
     """Middleware to collect metrics."""
     start_time = time.time()
-    
+
     # Increment active requests
     set_active_requests(1)
-    
+
     try:
         response = await call_next(request)
         duration = time.time() - start_time
-        
+
         # Record metrics
         record_request(
             method=request.method,
             endpoint=request.url.path,
             status=str(response.status_code),
-            duration=duration
+            duration=duration,
         )
-        
+
         return response
-    
+
     except Exception as e:
         duration = time.time() - start_time
-        
+
         # Record error metrics
         record_request(
             method=request.method,
             endpoint=request.url.path,
             status="500",
-            duration=duration
+            duration=duration,
         )
-        
+
         raise
-    
+
     finally:
         # Decrement active requests
         set_active_requests(0)
@@ -94,30 +98,27 @@ async def health():
 @app.get("/metrics")
 async def metrics():
     """Prometheus metrics endpoint."""
-    return Response(
-        content=get_metrics(),
-        media_type=get_metrics_content_type()
-    )
+    return Response(content=get_metrics(), media_type=get_metrics_content_type())
 
 
 @app.post("/solve", response_model=Solutions)
 async def solve(auction: Auction):
     """
     Solve a CoW Protocol auction using the default solver.
-    
+
     Args:
         auction: The auction to solve
-        
+
     Returns:
         Solutions object containing the solver's solutions
     """
     try:
         logger.info(f"Received solve request for auction: {auction.id}")
         logger.info(f"Orders: {len(auction.orders)}, Tokens: {len(auction.tokens)}")
-        
+
         # Record auction metrics
         record_auction_orders(len(auction.orders))
-        
+
         # Get the default solver engine
         if settings.default_solver_route == "baseline":
             engine = baseline_engine()
@@ -126,20 +127,25 @@ async def solve(auction: Auction):
             engine = mysolver_engine()
             logger.info("Using mysolver engine")
         else:
-            raise ValueError(f"Unknown default solver route: {settings.default_solver_route}")
-        
+            raise ValueError(
+                f"Unknown default solver route: {settings.default_solver_route}"
+            )
+
         # Solve the auction
         solutions = await engine.solve(auction)
-        
+
         # Record solution metrics
         record_solution("success")
-        logger.info(f"Solved auction successfully, returning {len(solutions.solutions)} solutions")
-        
+        logger.info(
+            f"Solved auction successfully, returning {len(solutions.solutions)} solutions"
+        )
+
         return solutions
-    
+
     except Exception as e:
         logger.error(f"Error solving auction: {e}")
         import traceback
+
         logger.error(f"Traceback: {traceback.format_exc()}")
         record_solution("error")
         raise
@@ -153,7 +159,7 @@ async def root():
         "version": "1.0.0",
         "status": "running",
         "engines": ["baseline", "mysolver"],
-        "default_engine": settings.default_solver_route
+        "default_engine": settings.default_solver_route,
     }
 
 
@@ -161,6 +167,7 @@ async def root():
 async def root_options():
     """Root endpoint OPTIONS handler for CORS."""
     from fastapi import Response
+
     response = Response(content="OK")
     response.headers["access-control-allow-origin"] = "*"
     response.headers["access-control-allow-methods"] = "GET, POST, PUT, DELETE, OPTIONS"

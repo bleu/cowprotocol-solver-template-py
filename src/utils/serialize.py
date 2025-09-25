@@ -14,10 +14,10 @@ from .hexbytes import to_hex, from_hex
 def serialize_u256(value: int) -> str:
     """
     Serialize U256 value to string.
-    
+
     Args:
         value: U256 value
-        
+
     Returns:
         Serialized string
     """
@@ -27,10 +27,10 @@ def serialize_u256(value: int) -> str:
 def deserialize_u256(value: str) -> int:
     """
     Deserialize string to U256 value.
-    
+
     Args:
         value: Serialized string
-        
+
     Returns:
         U256 value
     """
@@ -40,10 +40,10 @@ def deserialize_u256(value: str) -> int:
 def serialize_address(value: str) -> str:
     """
     Serialize address to string.
-    
+
     Args:
         value: Address string
-        
+
     Returns:
         Serialized address
     """
@@ -53,10 +53,10 @@ def serialize_address(value: str) -> str:
 def deserialize_address(value: str) -> str:
     """
     Deserialize string to address.
-    
+
     Args:
         value: Serialized string
-        
+
     Returns:
         Address string
     """
@@ -66,10 +66,10 @@ def deserialize_address(value: str) -> str:
 def serialize_hex(value: Union[int, bytes, str]) -> str:
     """
     Serialize value to hex string.
-    
+
     Args:
         value: Value to serialize
-        
+
     Returns:
         Hex string
     """
@@ -79,10 +79,10 @@ def serialize_hex(value: Union[int, bytes, str]) -> str:
 def deserialize_hex(value: str) -> bytes:
     """
     Deserialize hex string to bytes.
-    
+
     Args:
         value: Hex string
-        
+
     Returns:
         Bytes object
     """
@@ -92,10 +92,10 @@ def deserialize_hex(value: str) -> bytes:
 def serialize_decimal(value: Decimal) -> str:
     """
     Serialize Decimal to string.
-    
+
     Args:
         value: Decimal value
-        
+
     Returns:
         Serialized string
     """
@@ -105,10 +105,10 @@ def serialize_decimal(value: Decimal) -> str:
 def deserialize_decimal(value: str) -> Decimal:
     """
     Deserialize string to Decimal.
-    
+
     Args:
         value: Serialized string
-        
+
     Returns:
         Decimal value
     """
@@ -118,10 +118,10 @@ def deserialize_decimal(value: str) -> Decimal:
 def serialize_dict(data: Dict[str, Any]) -> str:
     """
     Serialize dictionary to JSON string.
-    
+
     Args:
         data: Dictionary to serialize
-        
+
     Returns:
         JSON string
     """
@@ -131,10 +131,10 @@ def serialize_dict(data: Dict[str, Any]) -> str:
 def deserialize_dict(data: str) -> Dict[str, Any]:
     """
     Deserialize JSON string to dictionary.
-    
+
     Args:
         data: JSON string
-        
+
     Returns:
         Dictionary
     """
@@ -144,10 +144,10 @@ def deserialize_dict(data: str) -> Dict[str, Any]:
 def serialize_list(data: List[Any]) -> str:
     """
     Serialize list to JSON string.
-    
+
     Args:
         data: List to serialize
-        
+
     Returns:
         JSON string
     """
@@ -157,10 +157,10 @@ def serialize_list(data: List[Any]) -> str:
 def deserialize_list(data: str) -> List[Any]:
     """
     Deserialize JSON string to list.
-    
+
     Args:
         data: JSON string
-        
+
     Returns:
         List
     """
@@ -170,10 +170,10 @@ def deserialize_list(data: str) -> List[Any]:
 def serialize_auction(auction: Dict[str, Any]) -> str:
     """
     Serialize auction data to JSON string.
-    
+
     Args:
         auction: Auction data
-        
+
     Returns:
         JSON string
     """
@@ -183,10 +183,10 @@ def serialize_auction(auction: Dict[str, Any]) -> str:
 def deserialize_auction(data: str) -> Dict[str, Any]:
     """
     Deserialize JSON string to auction data.
-    
+
     Args:
         data: JSON string
-        
+
     Returns:
         Auction data dictionary
     """
@@ -196,10 +196,10 @@ def deserialize_auction(data: str) -> Dict[str, Any]:
 def serialize_solution(solution: Dict[str, Any]) -> str:
     """
     Serialize solution data to JSON string.
-    
+
     Args:
         solution: Solution data
-        
+
     Returns:
         JSON string
     """
@@ -209,10 +209,10 @@ def serialize_solution(solution: Dict[str, Any]) -> str:
 def deserialize_solution(data: str) -> Dict[str, Any]:
     """
     Deserialize JSON string to solution data.
-    
+
     Args:
         data: JSON string
-        
+
     Returns:
         Solution data dictionary
     """
@@ -222,10 +222,10 @@ def deserialize_solution(data: str) -> Dict[str, Any]:
 def serialize_order(order: Dict[str, Any]) -> str:
     """
     Serialize order data to JSON string.
-    
+
     Args:
         order: Order data
-        
+
     Returns:
         JSON string
     """
@@ -235,10 +235,10 @@ def serialize_order(order: Dict[str, Any]) -> str:
 def deserialize_order(data: str) -> Dict[str, Any]:
     """
     Deserialize JSON string to order data.
-    
+
     Args:
         data: JSON string
-        
+
     Returns:
         Order data dictionary
     """
@@ -248,10 +248,10 @@ def deserialize_order(data: str) -> Dict[str, Any]:
 def serialize_liquidity(liquidity: Dict[str, Any]) -> str:
     """
     Serialize liquidity data to JSON string.
-    
+
     Args:
         liquidity: Liquidity data
-        
+
     Returns:
         JSON string
     """
@@ -261,10 +261,10 @@ def serialize_liquidity(liquidity: Dict[str, Any]) -> str:
 def deserialize_liquidity(data: str) -> Dict[str, Any]:
     """
     Deserialize JSON string to liquidity data.
-    
+
     Args:
         data: JSON string
-        
+
     Returns:
         Liquidity data dictionary
     """
@@ -274,10 +274,10 @@ def deserialize_liquidity(data: str) -> Dict[str, Any]:
 def serialize_token(token: Dict[str, Any]) -> str:
     """
     Serialize token data to JSON string.
-    
+
     Args:
         token: Token data
-        
+
     Returns:
         JSON string
     """
@@ -287,10 +287,10 @@ def serialize_token(token: Dict[str, Any]) -> str:
 def deserialize_token(data: str) -> Dict[str, Any]:
     """
     Deserialize JSON string to token data.
-    
+
     Args:
         data: JSON string
-        
+
     Returns:
         Token data dictionary
     """
