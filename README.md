@@ -27,8 +27,6 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Install additional dependencies for configuration system
-pip install pydantic-settings httpx
 
 # Verify installation
 python -c "from src.infra.settings import settings; print('✅ Config OK:', settings.solver.chain_id)"
@@ -87,14 +85,6 @@ curl -X POST "http://127.0.0.1:8080/baseline/solve" \
 ### Solve an Auction with MySolver Engine
 ```shell
 curl -X POST "http://127.0.0.1:8080/mysolver/solve" \
-  -H "accept: application/json" \
-  -H "Content-Type: application/json" \
-  --data "@data/small_example.json"
-```
-
-### Solve an Auction with Default Engine
-```shell
-curl -X POST "http://127.0.0.1:8080/solve" \
   -H "accept: application/json" \
   -H "Content-Type: application/json" \
   --data "@data/small_example.json"
@@ -306,7 +296,7 @@ data/
 
 ## Architecture
 
-The solver template now features a clean, modular architecture:
+The solver template features a clean, modular architecture:
 
 - **API Layer**: FastAPI application with separate routers for each engine
 - **Domain Layer**: Business models and logic (auction, solution, order, etc.)
@@ -317,7 +307,7 @@ The solver template now features a clean, modular architecture:
 
 ## Schema Compatibility
 
-This template now uses the current CoW Protocol schema:
+This template uses the schema:
 - **Input**: `Auction` model with proper field aliases
 - **Output**: `Solutions` model matching the protocol specification
 - **Field Names**: Uses Python snake_case with automatic camelCase JSON conversion
@@ -330,8 +320,4 @@ This template now uses the current CoW Protocol schema:
 
 ## Contributing
 
-This template is actively maintained. Please feel free to submit issues and pull requests to improve the template for the community.
-
-## License
-
-See LICENSE file for details.
+Please feel free to submit issues and pull requests to improve the template for the community.

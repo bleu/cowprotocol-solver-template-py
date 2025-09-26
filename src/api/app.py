@@ -9,7 +9,7 @@ import time
 import logging
 
 from .healthz import health_check
-from .metrics import (
+from ..infra.metrics import (
     record_request,
     record_solution,
     record_auction_orders,
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="CoW Protocol Solver",
     description="Multi-engine solver implementation for CoW Protocol auctions",
-    version="1.0.0",
+    version="0.0.1",
 )
 
 # Add middleware

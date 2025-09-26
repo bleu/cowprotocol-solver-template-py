@@ -38,8 +38,6 @@ class ServerSettings(BaseSettings):
 server_settings = ServerSettings()
 
 # ++++ Endpoints: ++++
-# Note: The app is now imported from src.api.app
-# All endpoints are handled by the main solver application
 
 
 # ++++ Server setup: ++++
