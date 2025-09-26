@@ -10,13 +10,8 @@ by the settlement contract.
 from typing import List, Tuple
 import logging
 
-try:
-    from web3 import Web3
-    from eth_abi import encode
-except ImportError:
-    # Fallback for environments without web3
-    Web3 = None
-    encode = None
+from web3 import Web3
+from eth_abi import encode
 
 from src.domain.solution import Interaction
 
@@ -31,7 +26,7 @@ class InteractionEncoder:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.w3 = Web3() if Web3 else None
+        self.w3 = Web3()
 
     def encode_uniswap_v2_swap(
         self,
@@ -56,11 +51,6 @@ class InteractionEncoder:
         Returns:
             Interaction object with encoded calldata
         """
-        if not self.w3:
-            # Fallback implementation without web3
-            return self._encode_uniswap_v2_fallback(
-                pool_address, token_in, token_out, amount_in, amount_out_min, recipient
-            )
 
         # Determine which token is token0 and token1
         # In real implementation, would need to query the pair contract
@@ -91,21 +81,6 @@ class InteractionEncoder:
 
         return Interaction(target=pool_address, value="0", call_data=calldata.hex())
 
-    def _encode_uniswap_v2_fallback(
-        self,
-        pool_address: str,
-        token_in: str,
-        token_out: str,
-        amount_in: int,
-        amount_out_min: int,
-        recipient: str,
-    ) -> Interaction:
-        """Fallback implementation without web3 dependency."""
-        # Simplified encoding - in production would need proper ABI encoding
-        calldata = f"0x022c0d9f{amount_out_min:064x}{recipient[2:].lower()}{'00' * 64}"
-
-        return Interaction(target=pool_address, value="0", call_data=calldata)
-
     def encode_balancer_swap(
         self,
         vault_address: str,
@@ -131,17 +106,6 @@ class InteractionEncoder:
         Returns:
             Interaction object with encoded calldata
         """
-        if not self.w3 or not encode:
-            # Fallback implementation
-            return self._encode_balancer_fallback(
-                vault_address,
-                pool_id,
-                token_in,
-                token_out,
-                amount_in,
-                amount_out_min,
-                recipient,
-            )
 
         # Balancer uses a SingleSwap struct
         # struct SingleSwap {
@@ -196,23 +160,6 @@ class InteractionEncoder:
 
         return Interaction(target=vault_address, value="0", call_data=calldata.hex())
 
-    def _encode_balancer_fallback(
-        self,
-        vault_address: str,
-        pool_id: bytes,
-        token_in: str,
-        token_out: str,
-        amount_in: int,
-        amount_out_min: int,
-        recipient: str,
-    ) -> Interaction:
-        """Fallback implementation without web3 dependency."""
-        # Simplified encoding - in production would need proper ABI encoding
-        pool_id_hex = pool_id.hex() if isinstance(pool_id, bytes) else pool_id
-        calldata = f"0x52bbbe29{pool_id_hex}{'00' * 24}{token_in[2:].lower()}{token_out[2:].lower()}{amount_in:064x}{'00' * 64}{recipient[2:].lower()}{'00' * 24}{amount_out_min:064x}{'ff' * 64}"
-
-        return Interaction(target=vault_address, value="0", call_data=calldata)
-
     def encode_curve_swap(
         self,
         pool_address: str,
@@ -234,11 +181,6 @@ class InteractionEncoder:
         Returns:
             Interaction object with encoded calldata
         """
-        if not self.w3:
-            # Fallback implementation
-            return self._encode_curve_fallback(
-                pool_address, token_in_index, token_out_index, amount_in, amount_out_min
-            )
 
         # Curve uses exchange function
         # function exchange(int128 i, int128 j, uint256 dx, uint256 min_dy)
@@ -254,17 +196,3 @@ class InteractionEncoder:
         calldata = function_selector + encoded_params
 
         return Interaction(target=pool_address, value="0", call_data=calldata.hex())
-
-    def _encode_curve_fallback(
-        self,
-        pool_address: str,
-        token_in_index: int,
-        token_out_index: int,
-        amount_in: int,
-        amount_out_min: int,
-    ) -> Interaction:
-        """Fallback implementation without web3 dependency."""
-        # Simplified encoding - in production would need proper ABI encoding
-        calldata = f"0x3df021240000000000000000000000000000000000000000000000000000000000000000{token_in_index:02x}0000000000000000000000000000000000000000000000000000000000000000{token_out_index:02x}{amount_in:064x}{amount_out_min:064x}"
-
-        return Interaction(target=pool_address, value="0", call_data=calldata)

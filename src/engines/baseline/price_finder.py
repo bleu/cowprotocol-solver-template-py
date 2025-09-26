@@ -12,10 +12,7 @@ from decimal import Decimal
 from collections import defaultdict
 import logging
 
-try:
-    import networkx as nx
-except ImportError:
-    nx = None
+import networkx as nx
 
 from src.domain.solution import Trade
 
@@ -85,8 +82,8 @@ class PriceFinder:
                     )
                     prices.update(component_prices)
         else:
-            # Fallback without networkx
-            prices = self._calculate_prices_simple(trades, prices, base_token)
+            # No trades, use reference prices only
+            pass
 
         # Normalize prices to ensure they're positive integers
         prices = self._normalize_prices(prices)
@@ -100,8 +97,6 @@ class PriceFinder:
 
         Each edge represents a trade and stores the exchange rate.
         """
-        if not nx:
-            return None
 
         graph = nx.DiGraph()
 
@@ -198,46 +193,6 @@ class PriceFinder:
 
         # Use propagation from this base
         return self._propagate_prices(graph, base_token, base_price)
-
-    def _calculate_prices_simple(
-        self,
-        trades: List[Trade],
-        existing_prices: Dict[str, int],
-        base_token: Optional[str],
-    ) -> Dict[str, int]:
-        """
-        Simple price calculation without networkx dependency.
-
-        Fallback method for environments without networkx.
-        """
-        prices = existing_prices.copy()
-
-        # Set base token price if not set
-        if base_token and base_token.lower() not in prices:
-            prices[base_token.lower()] = 10**18
-
-        # Calculate prices from trades
-        for trade in trades:
-            sell_token = trade.sell_token.lower()
-            buy_token = trade.buy_token.lower()
-
-            sell_amount = int(trade.sell_amount)
-            buy_amount = int(trade.buy_amount)
-
-            if sell_amount > 0 and buy_amount > 0:
-                # If we have price for one token, calculate the other
-                if sell_token in prices and buy_token not in prices:
-                    # Calculate buy token price
-                    sell_price = prices[sell_token]
-                    buy_price = (sell_price * sell_amount) // buy_amount
-                    prices[buy_token] = buy_price
-                elif buy_token in prices and sell_token not in prices:
-                    # Calculate sell token price
-                    buy_price = prices[buy_token]
-                    sell_price = (buy_price * buy_amount) // sell_amount
-                    prices[sell_token] = sell_price
-
-        return prices
 
     def _normalize_prices(self, prices: Dict[str, int]) -> Dict[str, int]:
         """
