@@ -10,7 +10,7 @@ import logging
 
 import uvicorn
 from dotenv import load_dotenv
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 # Import the main app
 from src.api.app import app
@@ -52,13 +52,6 @@ if __name__ == "__main__":
         fromfile_prefix_chars="@",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    # TODO - enable flag to write files to persistent storage
-    # parser.add_argument(
-    #     "--write_auxiliary_files",
-    #     type=bool,
-    #     default=False,
-    #     help="Write auxiliary instance and optimization files, or not.",
-    # )
 
     parser.add_argument(
         "--log-level",
