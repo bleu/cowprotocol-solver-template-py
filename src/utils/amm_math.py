@@ -234,7 +234,7 @@ class CurveStable:
         """
         Calculate output for StableSwap pool.
 
-        Simplified stable pool calculation. Real implementation requires
+        TODO: Simplified stable pool calculation. Real implementation requires
         solving polynomial equation iteratively.
 
         Args:
@@ -253,19 +253,19 @@ class CurveStable:
         # Apply fee
         amount_in_with_fee = (amount_in * (10000 - fee_bps)) // 10000
 
-        # Simplified stable swap - real implementation needs Newton-Raphson
+        # TODO: Simplified stable swap - real implementation needs Newton-Raphson
         # This is an approximation for demonstration
         total_balance = reserve_in + reserve_out
 
         # Use amplification to reduce slippage
         # Higher amplification = lower slippage for balanced pools
         if amplification > 1:
-            # Simplified formula - real Curve uses more complex math
+            # TODO: Simplified formula - real Curve uses more complex math
             k = reserve_in * reserve_out
             new_reserve_in = reserve_in + amount_in_with_fee
             new_reserve_out = k // new_reserve_in
 
-            # Apply amplification effect (simplified)
+            # TODO: Apply amplification effect (simplified)
             slippage_reduction = min(amplification / 100, 1.0)
             ideal_out = amount_in_with_fee * reserve_out // reserve_in
             actual_out = reserve_out - new_reserve_out

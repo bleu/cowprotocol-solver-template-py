@@ -71,6 +71,7 @@ def health():
     """
     Check the health of the solver service.
     """
+    # TODO: Health check not implemented yet
     typer.echo("Health check not implemented yet")
 
 
@@ -79,6 +80,7 @@ def metrics():
     """
     Display solver metrics.
     """
+    # TODO: Metrics display not implemented yet
     typer.echo("Metrics display not implemented yet")
 
 

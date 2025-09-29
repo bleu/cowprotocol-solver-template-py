@@ -170,7 +170,7 @@ class CowMatcher:
         # order_b sells token Y for X at price Q
         # They match if P * Q >= 1 (accounting for decimals)
 
-        # Simplified check - in production, consider decimals
+        # TODO: Simplified check - in production, consider decimals
         return price_a > 0 and price_b > 0
 
     def _create_match(self, order_a: Order, order_b: Order) -> Optional[OrderMatch]:
@@ -193,7 +193,7 @@ class CowMatcher:
             buy_order = order_a
 
         # Calculate traded amounts
-        # This is simplified - real implementation needs to handle partial fills
+        # TODO: This is simplified - real implementation needs to handle partial fills
         traded_amount = min(int(sell_order.sell_amount), int(buy_order.buy_amount))
 
         if traded_amount <= 0:

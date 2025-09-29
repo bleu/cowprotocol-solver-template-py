@@ -284,6 +284,10 @@ data/
 └── large_example.json     # Larger example auction data
 ```
 
+## Non-Production Ready Parts
+
+This template contains areas marked with `TODO:` comments that indicate non-production ready implementations. These are simplified or stub implementations that need to be replaced with proper production code.
+
 ## Implementation Guide
 
 1. **Understand the Models**: Start by examining the domain models in `src/domain/` (auction.py, solution.py, order.py, etc.)

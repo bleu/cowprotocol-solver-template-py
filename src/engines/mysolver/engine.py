@@ -39,7 +39,8 @@ class MySolverEngine:
             f"Orders: {len(auction.orders)}, Tokens: {len(auction.tokens)}"
         )
 
-        # Stub implementation - return minimal valid solution
+        # TODO: Stub implementation - return minimal valid solution,
+        # implement your custom solver logic!
         solution = Solution(id=auction.id, trades=[], prices={}, interactions=[])
 
         return Solutions(solutions=[solution])
