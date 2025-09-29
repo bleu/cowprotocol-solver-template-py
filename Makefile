@@ -1,5 +1,5 @@
 # CoW Protocol Solver Template - Makefile
-# Simple commands for development and testing
+# Poetry-based commands for development and testing
 
 .PHONY: help run format test clean install
 
@@ -10,7 +10,7 @@ help:
 	@echo "  make run      - Start the solver server"
 	@echo "  make format   - Format code with black"
 	@echo "  make test     - Run all tests"
-	@echo "  make install  - Install dependencies"
+	@echo "  make install  - Install dependencies with Poetry"
 	@echo "  make clean    - Clean up temporary files"
 	@echo "  make help     - Show this help message"
 	@echo ""
@@ -25,27 +25,26 @@ run:
 	@echo "Server will be available at: http://localhost:8080"
 	@echo "Press Ctrl+C to stop"
 	@echo ""
-	source venv/bin/activate && python -m src.infra.cli run --host 0.0.0.0 --port 8080
+	poetry run python -m src.infra.cli run --host 0.0.0.0 --port 8080
 
 # Format code with black
 format:
 	@echo "🎨 Formatting code with black..."
-	source venv/bin/activate && python -m black src/ --line-length 88
+	poetry run black src/ --line-length 88
 	@echo "✅ Code formatting complete!"
 
 # Run tests
 test:
 	@echo "🧪 Running test suite..."
-	source venv/bin/activate && python -m pytest src/tests/ -v
+	poetry run pytest src/tests/ -v
 	@echo "✅ Tests complete!"
 
 # Install dependencies
 install:
-	@echo "📦 Installing dependencies..."
-	python -m venv venv
-	source venv/bin/activate && pip install -r requirements.txt
+	@echo "📦 Installing dependencies with Poetry..."
+	poetry install
 	@echo "✅ Installation complete!"
-	@echo "Run 'source venv/bin/activate' to activate the virtual environment"
+	@echo "Dependencies are managed by Poetry"
 
 # Clean up temporary files
 clean:
@@ -57,3 +56,20 @@ clean:
 	rm -rf build/
 	rm -rf dist/
 	@echo "✅ Cleanup complete!"
+
+# Poetry-specific commands
+poetry-install:
+	@echo "📦 Installing dependencies with Poetry..."
+	poetry install
+
+poetry-update:
+	@echo "🔄 Updating dependencies..."
+	poetry update
+
+poetry-check:
+	@echo "🔍 Checking dependencies..."
+	poetry check
+
+poetry-export:
+	@echo "📤 Exporting requirements.txt for compatibility..."
+	poetry export -f requirements.txt --output requirements.txt --without-hashes

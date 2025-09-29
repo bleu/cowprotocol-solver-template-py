@@ -14,22 +14,49 @@ git clone git@github.com:cowprotocol/solver-template-py.git
 cd solver-template-py
 ```
 
+## Poetry Setup
+
+This project uses Poetry for dependency management. Install Poetry first by following the [official Poetry documentation](https://python-poetry.org/docs/).
+
 ## Install Requirements
 
 1. Python 3.11+ (tested with Python 3.11.9)
-2. Rust v1.60.0+ (for connecting to the driver)
+2. Poetry (for dependency management)
+3. Rust v1.60.0+ (for connecting to the driver)
 
 ```sh
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate
+# Install dependencies with Poetry
+poetry install
 
-# Install dependencies
-pip install -r requirements.txt
-
+# Activate Poetry shell (optional)
+poetry shell
 
 # Verify installation
-python -c "from src.infra.settings import settings; print('✅ Config OK:', settings.solver.chain_id)"
+poetry run python -c "from src.infra.settings import settings; print('✅ Config OK:', settings.solver.chain_id)"
+```
+
+### Poetry Commands
+
+```sh
+# Install dependencies
+poetry install
+
+# Add new dependency
+poetry add package-name
+
+# Add development dependency
+poetry add --group dev package-name
+
+# Update dependencies
+poetry update
+
+# Run commands in Poetry environment
+poetry run python -m src.infra.cli run
+poetry run pytest
+poetry run black src/
+
+# Export requirements.txt (for compatibility)
+poetry export -f requirements.txt --output requirements.txt
 ```
 
 ### Quick Test
@@ -124,20 +151,17 @@ make clean
 If you prefer to run commands manually:
 
 ```shell
-# Activate virtual environment
-source venv/bin/activate
-
 # Start server
-python -m src.infra.cli run --host 0.0.0.0 --port 8080
+poetry run python -m src.infra.cli run --host 0.0.0.0 --port 8080
 
 # Format code
-python -m black src/ --line-length 88
+poetry run black src/ --line-length 88
 
 # Run tests
-python -m pytest src/tests/ -v
+poetry run pytest src/tests/ -v
 
 # Show configuration
-python -m src.infra.cli config
+poetry run python -m src.infra.cli config
 ```
 
 ## Run Tests
@@ -147,38 +171,38 @@ The project includes a comprehensive test suite:
 ### Configuration Tests (Recommended)
 ```shell
 # Test configuration system (9 tests)
-python -m pytest src/tests/test_config.py -v
+poetry run python -m pytest src/tests/test_config.py -v
 
 # Quick configuration test
-python -c "from src.infra.settings import settings; print('✅ Config OK:', settings.solver.chain_id)"
+poetry run python -c "from src.infra.settings import settings; print('✅ Config OK:', settings.solver.chain_id)"
 
 # Show current configuration
-python -m src.infra.cli config
+poetry run python -m src.infra.cli config
 ```
 
 ### All Tests
 ```shell
 # Run all tests
-pytest src/tests/
+poetry run pytest src/tests/
 
 # Run specific test categories
-pytest src/tests/test_api_health_metrics.py
-pytest src/tests/test_baseline_engine.py
-pytest src/tests/test_config.py
+poetry run pytest src/tests/test_api_health_metrics.py
+poetry run pytest src/tests/test_baseline_engine.py
+poetry run pytest src/tests/test_config.py
 
 # Run with coverage
-pytest src/tests/ --cov=src
+poetry run pytest src/tests/ --cov=src
 ```
 
 ### Test Commands Summary
 ```shell
 # Basic tests
-python -m pytest src/tests/test_config.py -v          # Configuration tests
-python -m pytest src/tests/test_api_health_metrics.py -v  # API tests
+poetry run python -m pytest src/tests/test_config.py -v          # Configuration tests
+poetry run python -m pytest src/tests/test_api_health_metrics.py -v  # API tests
 
 # Manual tests
-python -c "from src.infra.settings import settings; print(settings.solver.dict())"  # Show config
-python -m src.infra.cli config                          # CLI config display
+poetry run python -c "from src.infra.settings import settings; print(settings.solver.dict())"  # Show config
+poetry run python -m src.infra.cli config                          # CLI config display
 ```
 
 ## Connect to the Orderbook
