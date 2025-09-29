@@ -28,45 +28,20 @@ This project uses Poetry for dependency management. Install Poetry first by foll
 # Install dependencies with Poetry
 poetry install
 
-# Activate Poetry shell (optional)
-poetry shell
 
 # Verify installation
 poetry run python -c "from src.infra.settings import settings; print('✅ Config OK:', settings.solver.chain_id)"
 ```
 
-### Poetry Commands
-
-```sh
-# Install dependencies
-poetry install
-
-# Add new dependency
-poetry add package-name
-
-# Add development dependency
-poetry add --group dev package-name
-
-# Update dependencies
-poetry update
-
-# Run commands in Poetry environment
-poetry run python -m src.infra.cli run
-poetry run pytest
-poetry run black src/
-
-# Export requirements.txt (for compatibility)
-poetry export -f requirements.txt --output requirements.txt
-```
 
 ### Quick Test
 
 ```sh
 # Test configuration system
-python -m pytest src/tests/test_config.py -v
+poetry run python -m pytest src/tests/test_config.py -v
 
 # Show current configuration
-python -m src.infra.cli config
+poetry run python -m src.infra.cli config
 ```
 
 ## Run Solver Server
@@ -78,12 +53,11 @@ The solver supports multiple engines in a single FastAPI application with a clea
 make run
 
 # Or manually
-source venv/bin/activate
-python -m src.infra.cli run --host 0.0.0.0 --port 8080
+poetry run python -m src.infra.cli run
 
 # Alternative methods
-uvicorn src.api.app:app --host 0.0.0.0 --port 8080
-python -m src._server
+poetry run python -m src._server
+poetry run uvicorn src.api.app:app --host 0.0.0.0 --port 8080
 ```
 
 The solver will start on `http://localhost:8080` with the following endpoints:

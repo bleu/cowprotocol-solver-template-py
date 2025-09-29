@@ -25,7 +25,7 @@ run:
 	@echo "Server will be available at: http://localhost:8080"
 	@echo "Press Ctrl+C to stop"
 	@echo ""
-	poetry run python -m src.infra.cli run --host 0.0.0.0 --port 8080
+	poetry run python -m src.infra.cli run
 
 # Format code with black
 format:
