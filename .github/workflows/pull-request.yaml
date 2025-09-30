@@ -9,6 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python 3.11
+        id: setup-python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
@@ -18,15 +19,12 @@ jobs:
           version: latest
           virtualenvs-create: true
           virtualenvs-in-project: true
-      - name: Load cached venv
-        id: cached-poetry-dependencies
+      - name: Cache dependencies
         uses: actions/cache@v3
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root
-      - name: Install project
         run: poetry install --no-interaction
       - name: Lint
         run: poetry run pylint src/
