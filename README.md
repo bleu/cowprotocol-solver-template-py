@@ -230,57 +230,14 @@ Navigate to [barn.cow.fi/](https://barn.cow.fi/) and place a tiny (real) order. 
 
 ## Project Structure
 
-```
-src/
-├── _server.py              # Main server entry point
-├── api/                    # API endpoints and routing
-│   ├── app.py             # Main FastAPI application
-│   ├── healthz.py         # Health check endpoint
-│   ├── metrics.py         # Metrics collection
-│   └── routers/           # API routers
-│       ├── baseline.py    # Baseline solver router
-│       └── mysolver.py    # MySolver router
-├── domain/                # Domain models and business logic
-│   ├── auction.py         # Auction model
-│   ├── solution.py        # Solution model
-│   ├── order.py           # Order model
-│   ├── liquidity.py       # Liquidity model
-│   └── common.py          # Common domain types
-├── engines/               # Solver engine implementations
-│   ├── base.py            # Base engine protocol
-│   ├── baseline/          # Baseline solver engine
-│   │   ├── engine.py      # Baseline implementation
-│   │   ├── pools.py       # Pool handling and AMM integration
-│   │   ├── interactions.py # Interaction encoding for DEXs
-│   │   ├── price_finder.py # Price calculation and clearing
-│   │   ├── path_finder.py # Path finding algorithms
-│   │   └── solution_builder.py # Solution construction
-│   └── mysolver/          # Custom solver engine
-│       └── engine.py      # MySolver implementation
-├── infra/                 # Infrastructure and configuration
-│   ├── settings.py        # Application settings
-│   ├── logging.py         # Logging configuration
-│   ├── metrics.py         # Metrics infrastructure
-│   ├── di.py              # Dependency injection
-│   └── cli.py             # Command line interface
-├── utils/                 # Utility functions
-│   ├── bytes_conv.py      # Bytes conversion utilities
-│   ├── hexbytes.py       # Hex bytes utilities
-│   ├── mathx.py          # Math utilities
-│   ├── amm_math.py       # AMM mathematical functions
-│   ├── serialize.py      # Serialization utilities
-│   └── u256.py           # U256 utilities
-└── tests/                 # Test suite
-    ├── test_api_health_metrics.py
-    ├── test_api_solve_contract.py
-    ├── test_baseline_engine.py
-    ├── test_config.py
-    └── test_multi_engine.py
+The solver follows a clean, modular architecture:
 
-data/
-├── small_example.json     # Example auction data
-└── large_example.json     # Larger example auction data
-```
+- **`src/domain/`** - Business models (auction, order, solution, liquidity)
+- **`src/engines/`** - Solver implementations (baseline, custom)
+- **`src/api/`** - FastAPI endpoints and routing
+- **`src/infra/`** - Configuration, logging, metrics
+- **`src/utils/`** - Shared utilities (math, serialization)
+- **`src/tests/`** - Test suite
 
 ## Non-Production Ready Parts
 
