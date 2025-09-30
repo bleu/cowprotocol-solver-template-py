@@ -5,8 +5,10 @@ This module provides configuration management using pydantic.
 """
 
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from pydantic_settings import BaseSettings
+from eth_typing import ChecksumAddress
+from web3 import Web3
 
 
 class SolverConfig(BaseSettings):
@@ -20,13 +22,13 @@ class SolverConfig(BaseSettings):
     )
 
     # WETH address (changes per network)
-    weth_address: str = Field(
+    weth_address: ChecksumAddress = Field(
         default="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",  # Mainnet WETH
         description="Wrapped ETH address for the network",
     )
 
     # Base tokens for pathfinding (liquid tokens for intermediary routes)
-    base_tokens: List[str] = Field(
+    base_tokens: List[ChecksumAddress] = Field(
         default=[
             "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",  # WETH
             "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",  # USDC
@@ -66,17 +68,17 @@ class SolverConfig(BaseSettings):
     )
 
     # Optional Uniswap V3 support
-    uni_v3_quoter_address: Optional[str] = Field(
+    uni_v3_quoter_address: Optional[ChecksumAddress] = Field(
         default=None, description="Uniswap V3 Quoter V2 contract address (optional)"
     )
 
     # Gnosis Chain specific addresses (when chain_id=100)
-    gnosis_weth_address: str = Field(
+    gnosis_weth_address: ChecksumAddress = Field(
         default="0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",  # WXDAI on Gnosis
         description="WETH address on Gnosis Chain",
     )
 
-    gnosis_base_tokens: List[str] = Field(
+    gnosis_base_tokens: List[ChecksumAddress] = Field(
         default=[
             "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",  # WXDAI
             "0x4ECaBa5870353805a9F068101A40E0f32ed605C6",  # USDT
@@ -85,6 +87,27 @@ class SolverConfig(BaseSettings):
         ],
         description="Base tokens for Gnosis Chain",
     )
+
+    @validator("weth_address", "gnosis_weth_address")
+    def validate_weth_addresses(cls, v):
+        if not Web3.is_address(v):
+            raise ValueError(f"Invalid WETH address: {v}")
+        return Web3.to_checksum_address(v)
+
+    @validator("base_tokens", "gnosis_base_tokens")
+    def validate_base_tokens(cls, v):
+        validated_tokens = []
+        for token in v:
+            if not Web3.is_address(token):
+                raise ValueError(f"Invalid base token address: {token}")
+            validated_tokens.append(Web3.to_checksum_address(token))
+        return validated_tokens
+
+    @validator("uni_v3_quoter_address")
+    def validate_quoter_address(cls, v):
+        if v is not None and not Web3.is_address(v):
+            raise ValueError(f"Invalid quoter address: {v}")
+        return Web3.to_checksum_address(v) if v is not None else None
 
     class Config:
         env_prefix = "SOLVER_"

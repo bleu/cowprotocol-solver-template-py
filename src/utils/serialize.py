@@ -7,8 +7,8 @@ This module provides utilities for serializing and deserializing data.
 from typing import Any, Dict, List, Union
 import json
 from decimal import Decimal
-from .u256 import to_u256, from_u256
-from .hexbytes import to_hex, from_hex
+from web3 import Web3
+from hexbytes import HexBytes
 
 
 def serialize_u256(value: int) -> str:
@@ -34,7 +34,12 @@ def deserialize_u256(value: str) -> int:
     Returns:
         U256 value
     """
-    return to_u256(value)
+    if isinstance(value, str):
+        if value.startswith("0x"):
+            return int(value, 16)
+        else:
+            return int(value)
+    return int(value)
 
 
 def serialize_address(value: str) -> str:
@@ -50,19 +55,6 @@ def serialize_address(value: str) -> str:
     return value.lower()
 
 
-def deserialize_address(value: str) -> str:
-    """
-    Deserialize string to address.
-
-    Args:
-        value: Serialized string
-
-    Returns:
-        Address string
-    """
-    return value.lower()
-
-
 def serialize_hex(value: Union[int, bytes, str]) -> str:
     """
     Serialize value to hex string.
@@ -73,7 +65,7 @@ def serialize_hex(value: Union[int, bytes, str]) -> str:
     Returns:
         Hex string
     """
-    return to_hex(value)
+    return Web3.to_hex(value)
 
 
 def deserialize_hex(value: str) -> bytes:
@@ -86,7 +78,7 @@ def deserialize_hex(value: str) -> bytes:
     Returns:
         Bytes object
     """
-    return from_hex(value)
+    return HexBytes(value)
 
 
 def serialize_decimal(value: Decimal) -> str:

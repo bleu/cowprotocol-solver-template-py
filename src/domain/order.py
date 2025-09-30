@@ -6,7 +6,6 @@ This module contains the Order model and related types.
 
 from typing import Optional, Literal
 from pydantic import BaseModel, Field, validator
-from .common import Address, U256
 
 
 class OrderSide:
@@ -28,8 +27,8 @@ class EcdsaSignature(BaseModel):
     """ECDSA signature."""
 
     v: int = Field(..., ge=0, le=255, description="Recovery ID")
-    r: U256 = Field(..., description="R component")
-    s: U256 = Field(..., description="S component")
+    r: int = Field(..., description="R component")
+    s: int = Field(..., description="S component")
 
 
 class AppData(BaseModel):
@@ -41,18 +40,18 @@ class AppData(BaseModel):
 class FlashloanHint(BaseModel):
     """Flashloan hint for order execution."""
 
-    tokens: list[Address] = Field(..., description="Tokens for flashloan")
+    tokens: list[str] = Field(..., description="Tokens for flashloan")
 
 
 class Order(BaseModel):
     """CoW Protocol order."""
 
     uid: str = Field(..., description="Unique order identifier")
-    sell_token: Address = Field(..., description="Token to sell")
-    buy_token: Address = Field(..., description="Token to buy")
-    sell_amount: U256 = Field(..., description="Amount to sell in wei")
-    buy_amount: U256 = Field(..., description="Amount to buy in wei")
-    fee_amount: U256 = Field(..., description="Fee amount in wei")
+    sell_token: str = Field(..., description="Token to sell")
+    buy_token: str = Field(..., description="Token to buy")
+    sell_amount: int = Field(..., description="Amount to sell in wei")
+    buy_amount: int = Field(..., description="Amount to buy in wei")
+    fee_amount: int = Field(..., description="Fee amount in wei")
     kind: Literal["sell", "buy"] = Field(..., description="Order kind")
     partially_fillable: bool = Field(
         False, description="Whether order can be partially filled"

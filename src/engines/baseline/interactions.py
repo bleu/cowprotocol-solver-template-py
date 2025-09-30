@@ -127,8 +127,8 @@ class InteractionEncoder:
         single_swap = (
             pool_id,
             0,  # SwapKind.GIVEN_IN
-            Web3.to_checksum_address(token_in),
-            Web3.to_checksum_address(token_out),
+            token_in,  # Trust driver validation
+            token_out,  # Trust driver validation
             amount_in,
             b"",  # userData
         )

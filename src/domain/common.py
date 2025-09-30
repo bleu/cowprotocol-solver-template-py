@@ -2,19 +2,15 @@
 Common types and utilities for CoW Protocol models.
 """
 
-from typing import NewType, Union
+from typing import Union
 from decimal import Decimal
 from pydantic import BaseModel, Field, validator
-
-# Type aliases
-Address = NewType("Address", str)
-U256 = NewType("U256", int)
 
 
 class Wei(BaseModel):
     """Wei amount (smallest unit of ETH)."""
 
-    value: U256 = Field(..., description="Wei amount")
+    value: int = Field(..., description="Wei amount")
 
     @validator("value")
     def validate_positive(cls, v):
@@ -26,7 +22,7 @@ class Wei(BaseModel):
 class GasPrice(BaseModel):
     """Gas price in wei per gas."""
 
-    value: U256 = Field(..., description="Gas price in wei")
+    value: int = Field(..., description="Gas price in wei")
 
     @validator("value")
     def validate_positive(cls, v):
@@ -38,8 +34,8 @@ class GasPrice(BaseModel):
 class Price(BaseModel):
     """Token price."""
 
-    value: U256 = Field(..., description="Price in wei")
-    denominator: U256 = Field(..., description="Price denominator")
+    value: int = Field(..., description="Price in wei")
+    denominator: int = Field(..., description="Price denominator")
 
     @validator("value")
     def validate_positive(cls, v):
@@ -84,15 +80,7 @@ class Deadline(BaseModel):
 class TokenId(BaseModel):
     """Token identifier."""
 
-    address: Address = Field(..., description="Token contract address")
-
-    @validator("address")
-    def validate_address_format(cls, v):
-        if not v.startswith("0x"):
-            raise ValueError("Token address must start with 0x")
-        if len(v) != 42:  # 0x + 40 hex chars
-            raise ValueError("Token address must be 42 characters long")
-        return v
+    address: str = Field(..., description="Token contract address")
 
 
 class OrderUid(BaseModel):
@@ -124,7 +112,7 @@ class LiquidityId(BaseModel):
 class ScalingFactor(BaseModel):
     """Scaling factor for calculations."""
 
-    value: U256 = Field(..., description="Scaling factor")
+    value: int = Field(..., description="Scaling factor")
 
     @validator("value")
     def validate_positive(cls, v):

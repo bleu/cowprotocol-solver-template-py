@@ -6,27 +6,26 @@ This module contains liquidity models for different AMM types.
 
 from typing import Dict, Optional
 from pydantic import BaseModel, Field, field_validator
-from .common import Address, U256
 
 
 class TokenPair(BaseModel):
     """Token pair for liquidity."""
 
-    token_a: Address = Field(..., description="First token address")
-    token_b: Address = Field(..., description="Second token address")
+    token_a: str = Field(..., description="First token address")
+    token_b: str = Field(..., description="Second token address")
 
 
 class ScalingFactor(BaseModel):
     """Scaling factor for liquidity calculations."""
 
-    factor: U256 = Field(..., description="Scaling factor")
+    factor: int = Field(..., description="Scaling factor")
 
 
 class LiquidityState(BaseModel):
     """Liquidity state information."""
 
     id: str = Field(..., description="Liquidity source identifier")
-    state: Dict[str, U256] = Field(..., description="State variables")
+    state: Dict[str, int] = Field(..., description="State variables")
     token_pair: TokenPair = Field(..., description="Token pair")
     scaling_factor: Optional[ScalingFactor] = Field(None, description="Scaling factor")
 
@@ -35,38 +34,38 @@ class ConstantProductLiquidity(BaseModel):
     """Constant product liquidity (Uniswap V2 style)."""
 
     id: str = Field(..., description="Liquidity source identifier")
-    tokens: Dict[Address, U256] = Field(..., description="Token balances")
-    fee: U256 = Field(..., description="Trading fee in basis points")
+    tokens: Dict[str, int] = Field(..., description="Token balances")
+    fee: int = Field(..., description="Trading fee in basis points")
 
 
 class WeightedProductLiquidity(BaseModel):
     """Weighted product liquidity (Balancer style)."""
 
     id: str = Field(..., description="Liquidity source identifier")
-    tokens: Dict[Address, U256] = Field(..., description="Token balances")
-    weights: Dict[Address, U256] = Field(..., description="Token weights")
-    fee: U256 = Field(..., description="Trading fee in basis points")
+    tokens: Dict[str, int] = Field(..., description="Token balances")
+    weights: Dict[str, int] = Field(..., description="Token weights")
+    fee: int = Field(..., description="Trading fee in basis points")
 
 
 class StableLiquidity(BaseModel):
     """Stable liquidity (Curve style)."""
 
     id: str = Field(..., description="Liquidity source identifier")
-    tokens: Dict[Address, U256] = Field(..., description="Token balances")
-    amplification: U256 = Field(..., description="Amplification parameter")
-    fee: U256 = Field(..., description="Trading fee in basis points")
+    tokens: Dict[str, int] = Field(..., description="Token balances")
+    amplification: int = Field(..., description="Amplification parameter")
+    fee: int = Field(..., description="Trading fee in basis points")
 
 
 class ConcentratedLiquidity(BaseModel):
     """Concentrated liquidity (Uniswap V3 style)."""
 
     id: str = Field(..., description="Liquidity source identifier")
-    token_a: Address = Field(..., description="First token address")
-    token_b: Address = Field(..., description="Second token address")
-    liquidity: U256 = Field(..., description="Liquidity amount")
+    token_a: str = Field(..., description="First token address")
+    token_b: str = Field(..., description="Second token address")
+    liquidity: int = Field(..., description="Liquidity amount")
     tick_lower: int = Field(..., description="Lower tick")
     tick_upper: int = Field(..., description="Upper tick")
-    fee: U256 = Field(..., description="Trading fee in basis points")
+    fee: int = Field(..., description="Trading fee in basis points")
 
 
 class LimitOrderLiquidity(BaseModel):
@@ -74,11 +73,11 @@ class LimitOrderLiquidity(BaseModel):
 
     id: str = Field(..., description="Liquidity source identifier")
     order_uid: str = Field(..., description="Order identifier")
-    sell_token: Address = Field(..., description="Token to sell")
-    buy_token: Address = Field(..., description="Token to buy")
-    sell_amount: U256 = Field(..., description="Amount to sell in wei")
-    buy_amount: U256 = Field(..., description="Amount to buy in wei")
-    fee_amount: U256 = Field(..., description="Fee amount in wei")
+    sell_token: str = Field(..., description="Token to sell")
+    buy_token: str = Field(..., description="Token to buy")
+    sell_amount: int = Field(..., description="Amount to sell in wei")
+    buy_amount: int = Field(..., description="Amount to buy in wei")
+    fee_amount: int = Field(..., description="Fee amount in wei")
 
 
 class Liquidity(BaseModel):
@@ -86,7 +85,7 @@ class Liquidity(BaseModel):
 
     id: str = Field(..., description="Liquidity source identifier")
     kind: str = Field(..., description="Liquidity type")
-    tokens: Dict[Address, U256] = Field(..., description="Token balances")
+    tokens: Dict[str, int] = Field(..., description="Token balances")
 
     # Optional fields for specific liquidity types
     constant_product: Optional[ConstantProductLiquidity] = Field(

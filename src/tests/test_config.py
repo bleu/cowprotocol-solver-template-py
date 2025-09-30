@@ -47,7 +47,7 @@ def test_engine_initialization():
         max_hops=2,
     )
 
-    assert engine.weth_address == "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    assert engine.weth_address == "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
     assert len(engine.base_tokens) >= 2  # WETH + USDC
     assert engine.max_hops == 2
 
@@ -102,8 +102,8 @@ def test_base_tokens_inclusion():
     )
 
     # WETH should be automatically added to base tokens
-    assert "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" in engine.base_tokens
-    assert "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" in engine.base_tokens
+    assert "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" in engine.base_tokens
+    assert "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" in engine.base_tokens
 
 
 def test_dependency_injection():

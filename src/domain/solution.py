@@ -5,52 +5,61 @@ This module contains the Solution model and related types.
 """
 
 from typing import Dict, List, Optional
-from pydantic import BaseModel, Field
-from .common import Address, U256
+from pydantic import BaseModel, Field, field_validator
+from hexbytes import HexBytes
 
 
 class Trade(BaseModel):
     """Trade in a solution."""
 
     order_uid: str = Field(..., description="Order identifier")
-    sell_token: Address = Field(..., description="Token to sell")
-    buy_token: Address = Field(..., description="Token to buy")
-    sell_amount: U256 = Field(..., description="Amount to sell in wei")
-    buy_amount: U256 = Field(..., description="Amount to buy in wei")
-    fee_amount: U256 = Field(..., description="Fee amount in wei")
+    sell_token: str = Field(..., description="Token to sell")
+    buy_token: str = Field(..., description="Token to buy")
+    sell_amount: str = Field(..., description="Amount to sell in wei")
+    buy_amount: str = Field(..., description="Amount to buy in wei")
+    fee_amount: str = Field(..., description="Fee amount in wei")
 
 
 class Fulfillment(BaseModel):
     """Order fulfillment."""
 
     order_uid: str = Field(..., description="Order identifier")
-    executed_amount: U256 = Field(..., description="Executed amount in wei")
+    executed_amount: str = Field(..., description="Executed amount in wei")
 
 
 class Fee(BaseModel):
     """Fee information."""
 
-    token: Address = Field(..., description="Fee token")
-    amount: U256 = Field(..., description="Fee amount in wei")
+    token: str = Field(..., description="Fee token")
+    amount: str = Field(..., description="Fee amount in wei")
 
 
 class JitTrade(BaseModel):
     """Just-in-time trade."""
 
     order_uid: str = Field(..., description="JIT order identifier")
-    sell_token: Address = Field(..., description="Token to sell")
-    buy_token: Address = Field(..., description="Token to buy")
-    sell_amount: U256 = Field(..., description="Amount to sell in wei")
-    buy_amount: U256 = Field(..., description="Amount to buy in wei")
-    fee_amount: U256 = Field(..., description="Fee amount in wei")
+    sell_token: str = Field(..., description="Token to sell")
+    buy_token: str = Field(..., description="Token to buy")
+    sell_amount: str = Field(..., description="Amount to sell in wei")
+    buy_amount: str = Field(..., description="Amount to buy in wei")
+    fee_amount: str = Field(..., description="Fee amount in wei")
 
 
 class Interaction(BaseModel):
     """Smart contract interaction."""
 
-    target: Address = Field(..., description="Target contract address")
-    value: U256 = Field(..., description="ETH value to send")
-    call_data: str = Field(..., description="Call data")
+    target: str = Field(..., description="Target contract address")
+    value: str = Field(..., description="ETH value to send")
+    call_data: HexBytes = Field(..., description="Call data")
+
+    model_config = {"arbitrary_types_allowed": True}
+
+    @field_validator("call_data", mode="before")
+    @classmethod
+    def validate_call_data(cls, v):
+        if isinstance(v, str):
+            return HexBytes(v)
+        return v
 
 
 class LiquidityInteraction(BaseModel):
@@ -69,15 +78,15 @@ class CustomInteraction(BaseModel):
 class Allowance(BaseModel):
     """Token allowance."""
 
-    token: Address = Field(..., description="Token address")
-    spender: Address = Field(..., description="Spender address")
-    amount: U256 = Field(..., description="Allowance amount in wei")
+    token: str = Field(..., description="Token address")
+    spender: str = Field(..., description="Spender address")
+    amount: str = Field(..., description="Allowance amount in wei")
 
 
 class ClearingPrices(BaseModel):
     """Clearing prices for tokens."""
 
-    prices: Dict[Address, U256] = Field(..., description="Token prices in wei")
+    prices: Dict[str, int] = Field(..., description="Token prices in wei")
 
 
 class Single(BaseModel):
@@ -85,7 +94,7 @@ class Single(BaseModel):
 
     id: int = Field(..., description="Solution identifier")
     trades: List[Trade] = Field(..., description="Trades in the solution")
-    prices: Dict[Address, U256] = Field(..., description="Clearing prices")
+    prices: Dict[str, str] = Field(..., description="Clearing prices")
     interactions: List[Interaction] = Field(
         ..., description="Smart contract interactions"
     )
@@ -110,7 +119,7 @@ class Solution(BaseModel):
 
     id: int = Field(..., description="Solution identifier")
     trades: List[Trade] = Field(..., description="Trades in the solution")
-    prices: Dict[Address, U256] = Field(..., description="Clearing prices")
+    prices: Dict[str, str] = Field(..., description="Clearing prices")
     interactions: List[Interaction] = Field(
         ..., description="Smart contract interactions"
     )
@@ -128,10 +137,6 @@ class Solution(BaseModel):
     allowances: List[Allowance] = Field(
         default_factory=list, description="Token allowances"
     )
-
-    model_config = {
-        "json_encoders": {U256: str}  # convert U256 to string automatically
-    }
 
 
 class Solutions(BaseModel):

@@ -9,6 +9,7 @@ from typing import List, Set, Optional, Dict, Tuple
 import networkx as nx
 from dataclasses import dataclass
 from src.domain.liquidity import Liquidity
+from src.utils.fee_conversion import fee_to_basis_points
 
 
 @dataclass
@@ -127,7 +128,7 @@ class PathFinder:
             pool=liquidity.id,
             kind="constant_product",
             gas=int(liquidity.gas_estimate),
-            fee=int(float(liquidity.fee) * 10000),
+            fee=fee_to_basis_points(liquidity.fee),
         )
         graph.add_edge(
             token1,
@@ -135,7 +136,7 @@ class PathFinder:
             pool=liquidity.id,
             kind="constant_product",
             gas=int(liquidity.gas_estimate),
-            fee=int(float(liquidity.fee) * 10000),
+            fee=fee_to_basis_points(liquidity.fee),
         )
 
     def _add_weighted_product_pool(self, graph: nx.DiGraph, liquidity: Liquidity):
@@ -152,7 +153,7 @@ class PathFinder:
                     pool=liquidity.id,
                     kind="weighted_product",
                     gas=int(liquidity.gas_estimate),
-                    fee=int(float(liquidity.fee) * 10000),
+                    fee=fee_to_basis_points(liquidity.fee),
                 )
                 graph.add_edge(
                     token_b,
@@ -160,7 +161,7 @@ class PathFinder:
                     pool=liquidity.id,
                     kind="weighted_product",
                     gas=int(liquidity.gas_estimate),
-                    fee=int(float(liquidity.fee) * 10000),
+                    fee=fee_to_basis_points(liquidity.fee),
                 )
 
     def _find_path_through_base(

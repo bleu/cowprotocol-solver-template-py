@@ -6,8 +6,7 @@ This module contains the Auction model and related types.
 
 from typing import Dict, List, Optional, Union
 from decimal import Decimal
-from pydantic import BaseModel, Field, validator
-from .common import Address, U256
+from pydantic import BaseModel, Field, field_validator
 
 
 class Token(BaseModel):
@@ -28,14 +27,14 @@ class Order(BaseModel):
     uid: str = Field(..., description="Unique order identifier")
     sell_token: str = Field(..., alias="sellToken", description="Token to sell")
     buy_token: str = Field(..., alias="buyToken", description="Token to buy")
-    sell_amount: str = Field(
+    sell_amount: int = Field(
         ..., alias="sellAmount", description="Amount to sell in wei"
     )
-    full_sell_amount: str = Field(
+    full_sell_amount: int = Field(
         ..., alias="fullSellAmount", description="Full sell amount in wei"
     )
-    buy_amount: str = Field(..., alias="buyAmount", description="Amount to buy in wei")
-    full_buy_amount: str = Field(
+    buy_amount: int = Field(..., alias="buyAmount", description="Amount to buy in wei")
+    full_buy_amount: int = Field(
         ..., alias="fullBuyAmount", description="Full buy amount in wei"
     )
     valid_to: int = Field(..., alias="validTo", description="Valid until timestamp")
@@ -76,11 +75,25 @@ class Liquidity(BaseModel):
     id: str = Field(..., description="Liquidity source identifier")
     address: str = Field(..., description="Liquidity source address")
     router: str = Field(..., description="Router address")
-    gas_estimate: str = Field(..., alias="gasEstimate", description="Gas estimate")
+    gas_estimate: int = Field(..., alias="gasEstimate", description="Gas estimate")
     tokens: Dict[str, Dict[str, str]] = Field(
         default_factory=dict, description="Token balances"
     )
-    fee: str = Field(..., description="Trading fee")
+    fee: int = Field(..., description="Trading fee")
+
+    @field_validator("fee", mode="before")
+    @classmethod
+    def validate_fee(cls, v):
+        if isinstance(v, str):
+            return int(float(v) * 10000)  # Simple: 0.003 -> 30
+        return v
+
+    @field_validator("gas_estimate", mode="before")
+    @classmethod
+    def validate_gas_estimate(cls, v):
+        if isinstance(v, str):
+            return int(v)
+        return v
 
     model_config = {"extra": "ignore", "populate_by_name": True}
 
@@ -98,7 +111,7 @@ class Auction(BaseModel):
     liquidity: List[Liquidity] = Field(
         default_factory=list, description="Liquidity sources"
     )
-    effective_gas_price: str = Field(
+    effective_gas_price: int = Field(
         ..., alias="effectiveGasPrice", description="Effective gas price in wei"
     )
     deadline: str = Field(..., description="Auction deadline (ISO 8601)")
@@ -107,6 +120,13 @@ class Auction(BaseModel):
         alias="surplusCapturingJitOrderOwners",
         description="JIT order owners",
     )
+
+    @field_validator("effective_gas_price", mode="before")
+    @classmethod
+    def validate_effective_gas_price(cls, v):
+        if isinstance(v, str):
+            return int(v)
+        return v
 
     model_config = {
         "extra": "ignore",  # Ignore unknown fields

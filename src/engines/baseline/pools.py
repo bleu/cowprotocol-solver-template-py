@@ -14,6 +14,7 @@ import logging
 
 from src.domain.liquidity import Liquidity
 from src.utils.amm_math import UniswapV2, BalancerWeighted, CurveStable
+from src.utils.fee_conversion import fee_to_basis_points
 
 
 @dataclass
@@ -231,7 +232,7 @@ class PoolHandler:
             token1=tokens[1].lower(),
             reserve0=reserves[0],
             reserve1=reserves[1],
-            fee_bps=int(float(liquidity.fee) * 10000),  # Convert to basis points
+            fee_bps=fee_to_basis_points(liquidity.fee),  # Convert to basis points
         )
 
     def _parse_weighted_product(
@@ -264,7 +265,7 @@ class PoolHandler:
             tokens=tokens,
             balances=balances,
             weights=weights,
-            fee_bps=int(Decimal(str(liquidity.fee)) * 10000),
+            fee_bps=fee_to_basis_points(liquidity.fee),
         )
 
     def _parse_stable_pool(self, liquidity: Liquidity) -> Optional[StablePool]:
@@ -289,7 +290,7 @@ class PoolHandler:
             tokens=tokens,
             balances=balances,
             amplification=amplification,
-            fee_bps=int(Decimal(str(liquidity.fee)) * 10000),
+            fee_bps=fee_to_basis_points(liquidity.fee),
         )
 
     def execute_swap(

@@ -44,8 +44,8 @@ class BaselineEngine:
         self.logger = logging.getLogger(__name__)
 
         # Store configuration
-        self.weth_address = weth_address.lower()
-        self.base_tokens: Set[str] = {token.lower() for token in base_tokens}
+        self.weth_address = weth_address
+        self.base_tokens: Set[str] = set(base_tokens)
         self.max_hops = max_hops
         self.max_partial_attempts = max_partial_attempts
         self.solution_gas_offset = solution_gas_offset

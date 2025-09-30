@@ -47,12 +47,15 @@ class SolutionBuilder:
             if trade.buy_token.lower() not in prices:
                 prices[trade.buy_token.lower()] = 10**18  # Default price
 
+        # Convert prices from int to str as required by Solution model
+        prices_str = {token: str(price) for token, price in prices.items()}
+
         # Calculate solution ID following Rust implementation pattern
         solution_id = self._generate_solution_id(auction_id, order_index)
 
         # Build the solution
         solution = Solution(
-            id=solution_id, trades=trades, interactions=interactions, prices=prices
+            id=solution_id, trades=trades, interactions=interactions, prices=prices_str
         )
 
         # Log solution details
