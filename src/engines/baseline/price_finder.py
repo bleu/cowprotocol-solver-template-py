@@ -7,7 +7,7 @@ executed trades and reference prices.
 Based on the Rust baseline solver implementation.
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, TYPE_CHECKING
 from decimal import Decimal
 from collections import defaultdict
 import logging
@@ -15,6 +15,9 @@ import logging
 import networkx as nx
 
 from src.domain.solution import Trade
+
+if TYPE_CHECKING:
+    from src.domain.order import Order
 
 
 class PriceFinder:
@@ -33,6 +36,7 @@ class PriceFinder:
         trades: List[Trade],
         reference_prices: Optional[Dict[str, int]] = None,
         base_token: Optional[str] = None,
+        orders: Optional[Dict[str, "Order"]] = None,
     ) -> Dict[str, int]:
         """
         Calculate uniform clearing prices for all tokens.
@@ -41,6 +45,7 @@ class PriceFinder:
             trades: List of executed trades
             reference_prices: Optional reference prices from auction
             base_token: Optional base token for price normalization (e.g., WETH)
+            orders: Optional dict mapping order UIDs to Order objects for token lookup
 
         Returns:
             Dictionary mapping token addresses to prices in wei
@@ -59,7 +64,7 @@ class PriceFinder:
 
         # Build price graph from trades
         if nx:
-            price_graph = self._build_price_graph(trades)
+            price_graph = self._build_price_graph(trades, orders)
 
             # Find connected components
             components = list(nx.connected_components(price_graph.to_undirected()))
@@ -91,21 +96,32 @@ class PriceFinder:
         self.logger.info(f"Calculated prices for {len(prices)} tokens")
         return prices
 
-    def _build_price_graph(self, trades: List[Trade]):
+    def _build_price_graph(self, trades: List[Trade], orders: Optional[Dict[str, "Order"]] = None):
         """
         Build a directed graph representing price relationships.
 
         Each edge represents a trade and stores the exchange rate.
+
+        Args:
+            trades: List of Trade objects (fulfillment format with order UID)
+            orders: Optional dict mapping order UIDs to Order objects
         """
 
         graph = nx.DiGraph()
 
         for trade in trades:
-            sell_token = trade.sell_token.lower()
-            buy_token = trade.buy_token.lower()
-
-            sell_amount = int(trade.sell_amount)
-            buy_amount = int(trade.buy_amount)
+            # Look up order details from orders dict
+            order_uid = trade.order
+            if orders and order_uid in orders:
+                order = orders[order_uid]
+                sell_token = order.sell_token.lower()
+                buy_token = order.buy_token.lower()
+                sell_amount = int(order.sell_amount)
+                buy_amount = int(order.buy_amount)
+            else:
+                # Skip if we can't find order details
+                self.logger.warning(f"Order {order_uid[:20]}... not found in orders dict")
+                continue
 
             if sell_amount > 0:
                 # Add edge with exchange rate
@@ -113,13 +129,13 @@ class PriceFinder:
 
                 # Add bidirectional edges with rates
                 graph.add_edge(
-                    sell_token, buy_token, rate=rate, trade_id=trade.order_uid
+                    sell_token, buy_token, rate=rate, trade_id=order_uid
                 )
                 graph.add_edge(
                     buy_token,
                     sell_token,
                     rate=Decimal(1) / rate,
-                    trade_id=trade.order_uid,
+                    trade_id=order_uid,
                 )
 
         return graph

@@ -221,27 +221,21 @@ class CowMatcher:
         """
         trades = []
 
-        # Trade for sell order
+        # Trade for sell order (kind must be "fulfillment" for regular orders)
         trades.append(
             Trade(
-                order_uid=match.sell_order.uid,
-                sell_token=match.sell_order.sell_token,
-                buy_token=match.sell_order.buy_token,
-                sell_amount=str(match.traded_amount),
-                buy_amount=str(match.traded_amount),  # Simplified
-                fee_amount=match.sell_order.fee_amount,
+                kind="fulfillment",
+                order=match.sell_order.uid,
+                executed_amount=str(match.traded_amount),
             )
         )
 
-        # Trade for buy order
+        # Trade for buy order (kind must be "fulfillment" for regular orders)
         trades.append(
             Trade(
-                order_uid=match.buy_order.uid,
-                sell_token=match.buy_order.sell_token,
-                buy_token=match.buy_order.buy_token,
-                sell_amount=str(match.traded_amount),
-                buy_amount=str(match.traded_amount),  # Simplified
-                fee_amount=match.buy_order.fee_amount,
+                kind="fulfillment",
+                order=match.buy_order.uid,
+                executed_amount=str(match.traded_amount),
             )
         )
 

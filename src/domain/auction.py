@@ -64,6 +64,9 @@ class Order(BaseModel):
         "eip712", alias="signingScheme", description="Signing scheme"
     )
     signature: str = Field(..., description="Order signature")
+    fee_amount: int = Field(
+        0, alias="feeAmount", description="Fee amount in wei (deprecated, defaults to 0)"
+    )
 
     model_config = {"extra": "ignore", "populate_by_name": True}
 

@@ -46,9 +46,9 @@ class PathFinder:
 
         for liquidity in liquidity_sources:
             # Parse liquidity based on kind
-            if liquidity.kind == "ConstantProduct":
+            if liquidity.kind == "constantProduct":
                 self._add_constant_product_pool(graph, liquidity)
-            elif liquidity.kind == "WeightedProduct":
+            elif liquidity.kind == "weightedProduct":
                 self._add_weighted_product_pool(graph, liquidity)
             # Add other pool types as needed
 

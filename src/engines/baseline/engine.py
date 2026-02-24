@@ -89,7 +89,7 @@ class BaselineEngine:
             # Phase 1: Find CoW matches
             cow_trades = self.cow_matcher.find_matches(auction.orders)
             self.logger.info(f"Found {len(cow_trades)} CoW trades")
-            
+
             # Phase 2: Parse liquidity and build graph
             pools = {}
             graph = None
@@ -98,7 +98,7 @@ class BaselineEngine:
                 pools = self.pool_handler.parse_liquidity(auction.liquidity)
                 graph = self.path_finder.build_graph(auction.liquidity)
                 self.logger.info(f"Parsed {len(pools)} pools")
-            
+
             # Phase 3: Route remaining orders through AMMs
             amm_trades = []
             interactions = []
@@ -108,7 +108,7 @@ class BaselineEngine:
                 remaining_orders = self._get_unmatched_orders(
                     auction.orders, cow_trades
                 )
-                
+
                 for order in remaining_orders:
                     # Try to route through AMMs
                     result = self._route_order_through_amms(order, graph, pools)
@@ -117,25 +117,29 @@ class BaselineEngine:
                         trades, order_interactions = result
                         amm_trades.extend(trades)
                         interactions.extend(order_interactions)
-            
+
             # Phase 4: Calculate clearing prices
             all_trades = cow_trades + amm_trades
-            
+
             # Get reference prices from auction
             reference_prices = self._extract_reference_prices(auction.tokens)
-            
+
+            # Create orders dict for price finder to look up token info
+            orders_dict = {order.uid: order for order in auction.orders}
+
             # Calculate final clearing prices
             prices = self.price_finder.find_clearing_prices(
                 trades=all_trades,
                 reference_prices=reference_prices,
                 base_token=self.weth_address,
+                orders=orders_dict,
             )
 
             # Ensure all tokens have prices
             for token_addr in auction.tokens.keys():
                 if token_addr.lower() not in prices:
                     prices[token_addr.lower()] = 10**18  # Default price
-            
+
             # Phase 5: Build solution
             solution = self.solution_builder.build_solution(
                 auction_id=auction.id,
@@ -218,20 +222,20 @@ class BaselineEngine:
                     token_in=token_in,
                     token_out=token_out,
                     amount_in=current_amount,
-                    amount_out_min=int(amount_out * 0.97),  # 3% slippage
+                    amount_out_min=int(amount_out * 0.97),
                 )
                 interactions.append(interaction)
 
             current_amount = amount_out
 
-        # Create trade for the order
+        executed_amount = (
+            str(order.sell_amount) if order.kind == "sell" else str(current_amount)
+        )
+
         trade = Trade(
-            order_uid=order.uid,
-            sell_token=order.sell_token,
-            buy_token=order.buy_token,
-            sell_amount=str(order.sell_amount),
-            buy_amount=str(current_amount),
-            fee_amount=order.fee_amount,
+            kind="fulfillment",
+            order=order.uid,
+            executed_amount=executed_amount,
         )
         trades.append(trade)
 
@@ -241,7 +245,7 @@ class BaselineEngine:
         self, all_orders: List[Order], cow_trades: List[Trade]
     ) -> List[Order]:
         """Get orders that weren't matched in CoW."""
-        matched_uids = {trade.order_uid for trade in cow_trades}
+        matched_uids = {trade.order for trade in cow_trades}
         return [order for order in all_orders if order.uid not in matched_uids]
 
     def _extract_reference_prices(self, tokens: Dict) -> Dict[str, int]:

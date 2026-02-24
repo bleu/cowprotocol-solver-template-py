@@ -40,13 +40,6 @@ class SolutionBuilder:
         Returns:
             Complete Solution object
         """
-        # Ensure all traded tokens have prices
-        for trade in trades:
-            if trade.sell_token.lower() not in prices:
-                prices[trade.sell_token.lower()] = 10**18  # Default price
-            if trade.buy_token.lower() not in prices:
-                prices[trade.buy_token.lower()] = 10**18  # Default price
-
         # Convert prices from int to str as required by Solution model
         prices_str = {token: str(price) for token, price in prices.items()}
 
@@ -99,13 +92,13 @@ class SolutionBuilder:
             self.logger.error("Solution has no prices")
             return False
 
-        # Check all trades have prices
+        # Check all trades have valid order UIDs
         for trade in solution.trades:
-            if trade.sell_token.lower() not in solution.prices:
-                self.logger.error(f"No price for sell token {trade.sell_token}")
+            if not trade.order:
+                self.logger.error("Trade missing order UID")
                 return False
-            if trade.buy_token.lower() not in solution.prices:
-                self.logger.error(f"No price for buy token {trade.buy_token}")
+            if not trade.executed_amount:
+                self.logger.error("Trade missing executed amount")
                 return False
 
         # Validate interactions
